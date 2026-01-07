@@ -1,17 +1,25 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
 
 export default function FocusTimer() {
   const [duration, setDuration] = useState(25) // minutes
   const [timeLeft, setTimeLeft] = useState(duration * 60) // seconds
   const [isRunning, setIsRunning] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
+  const [isDark, setIsDark] = useState(true)
 
   useEffect(() => {
     setTimeLeft(duration * 60)
   }, [duration])
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }, [isDark])
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null
@@ -50,10 +58,21 @@ export default function FocusTimer() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
   }
 
-  const progress = ((duration * 60 - timeLeft) / (duration * 60)) * 100
-
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
+    <div className="relative flex flex-col items-center justify-center min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white transition-colors">
+      <div className="absolute top-4 right-4">
+        <button
+          onClick={() => setIsDark(!isDark)}
+          className="w-12 h-6 bg-gray-300 dark:bg-gray-600 rounded-full relative transition-colors"
+        >
+          <div
+            className={`w-5 h-5 bg-white dark:bg-gray-800 rounded-full absolute top-0.5 transition-transform ${
+              isDark ? 'translate-x-6' : 'translate-x-0.5'
+            }`}
+          ></div>
+        </button>
+      </div>
+
       <h1 className="text-4xl font-bold mb-8">Focus Timer</h1>
       
       <div className="mb-8">
@@ -62,63 +81,35 @@ export default function FocusTimer() {
           type="number"
           value={duration}
           onChange={(e) => setDuration(Number(e.target.value))}
-          className="bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white"
+          className="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-black dark:text-white"
           min="1"
           max="60"
         />
       </div>
 
-      <div className="relative mb-8">
-        <svg width="200" height="200" className="transform -rotate-90">
-          <circle
-            cx="100"
-            cy="100"
-            r="90"
-            stroke="gray"
-            strokeWidth="10"
-            fill="none"
-          />
-          <motion.circle
-            cx="100"
-            cy="100"
-            r="90"
-            stroke="#3b82f6"
-            strokeWidth="10"
-            fill="none"
-            strokeLinecap="round"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: progress / 100 }}
-            transition={{ duration: 0.5 }}
-            style={{
-              strokeDasharray: `${2 * Math.PI * 90}`,
-              strokeDashoffset: `${2 * Math.PI * 90 * (1 - progress / 100)}`,
-            }}
-          />
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-3xl font-mono">{formatTime(timeLeft)}</span>
-        </div>
+      <div className="mb-8">
+        <span className="text-8xl font-mono font-bold">{formatTime(timeLeft)}</span>
       </div>
 
       <div className="flex space-x-4">
         {!isRunning ? (
           <button
             onClick={startTimer}
-            className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded font-semibold"
+            className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded font-semibold transition-colors"
           >
             Start
           </button>
         ) : (
           <button
             onClick={pauseTimer}
-            className="bg-yellow-600 hover:bg-yellow-700 px-6 py-2 rounded font-semibold"
+            className="bg-yellow-600 hover:bg-yellow-700 px-6 py-2 rounded font-semibold transition-colors"
           >
             Pause
           </button>
         )}
         <button
           onClick={resetTimer}
-          className="bg-red-600 hover:bg-red-700 px-6 py-2 rounded font-semibold"
+          className="bg-red-600 hover:bg-red-700 px-6 py-2 rounded font-semibold transition-colors"
         >
           Reset
         </button>
