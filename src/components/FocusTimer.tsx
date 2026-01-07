@@ -88,7 +88,7 @@ export default function FocusTimer() {
       </div>
 
       <div className="mb-8">
-        <span className="text-8xl font-mono font-bold">{formatTime(timeLeft)}</span>
+        <span className="text-9xl font-mono font-bold">{formatTime(timeLeft)}</span>
       </div>
 
       <div className="flex space-x-4">
