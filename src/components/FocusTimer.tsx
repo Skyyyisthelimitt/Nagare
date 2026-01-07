@@ -63,63 +63,67 @@ export default function FocusTimer() {
   }
 
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors">
-      <div className="absolute top-4 left-4">
-        <h2 className="text-2xl font-bold">Nagare</h2>
-      </div>
-      <div className="absolute top-4 right-4">
-        <button
-          onClick={() => setIsDark(!isDark)}
-          className="w-12 h-6 bg-gray-300 dark:bg-gray-600 rounded-full relative transition-colors"
-        >
-          <div
-            className={`w-5 h-5 bg-white dark:bg-gray-800 rounded-full absolute top-0.5 transition-transform ${
-              isDark ? 'translate-x-6' : 'translate-x-0.5'
-            }`}
-          ></div>
-        </button>
-      </div>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+      <div className="bg-white dark:bg-black text-black dark:text-white rounded-lg shadow-lg p-8 max-w-md w-full mx-4">
+        <div className="relative mb-8">
+          <div className="absolute top-0 left-0">
+            <h2 className="text-2xl font-bold">Nagare</h2>
+          </div>
+          <div className="absolute top-0 right-0">
+            <button
+              onClick={() => setIsDark(!isDark)}
+              className="w-12 h-6 bg-gray-300 dark:bg-gray-600 rounded-full relative transition-colors"
+            >
+              <div
+                className={`w-5 h-5 bg-white dark:bg-gray-800 rounded-full absolute top-0.5 transition-transform ${
+                  isDark ? 'translate-x-6' : 'translate-x-0.5'
+                }`}
+              ></div>
+            </button>
+          </div>
+        </div>
 
-      <h1 className="text-4xl font-bold mb-8">Focus Timer</h1>
-      
-      <div className="mb-8">
-        <label className="block text-sm font-medium mb-2">Duration (minutes):</label>
-        <input
-          type="number"
-          value={duration}
-          onChange={(e) => setDuration(Number(e.target.value))}
-          className="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-black dark:text-white"
-          min="1"
-          max="60"
-        />
-      </div>
+        <h1 className="text-3xl font-bold mb-8 text-center">Focus Timer</h1>
+        
+        <div className="mb-8 text-center">
+          <span className="text-8xl font-mono font-bold block">{formatTime(timeLeft)}</span>
+        </div>
 
-      <div className="mb-8 text-center">
-        <span className="text-[12rem] font-sans font-bold">{formatTime(timeLeft)}</span>
-      </div>
+        <div className="mb-8">
+          <label className="block text-sm font-medium mb-2">Duration (minutes):</label>
+          <input
+            type="number"
+            value={duration}
+            onChange={(e) => setDuration(Number(e.target.value))}
+            className="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-black dark:text-white w-full"
+            min="1"
+            max="60"
+          />
+        </div>
 
-      <div className="flex space-x-4">
-        {!isRunning ? (
+        <div className="flex space-x-4 justify-center">
+          {!isRunning ? (
+            <button
+              onClick={startTimer}
+              className="bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 px-6 py-2 rounded font-semibold transition-colors text-white"
+            >
+              Start
+            </button>
+          ) : (
+            <button
+              onClick={pauseTimer}
+              className="bg-orange-600 dark:bg-orange-500 hover:bg-orange-700 dark:hover:bg-orange-600 px-6 py-2 rounded font-semibold transition-colors text-white"
+            >
+              Pause
+            </button>
+          )}
           <button
-            onClick={startTimer}
-            className="bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 px-6 py-2 rounded font-semibold transition-colors text-white"
+            onClick={resetTimer}
+            className="bg-gray-600 dark:bg-gray-500 hover:bg-gray-700 dark:hover:bg-gray-600 px-6 py-2 rounded font-semibold transition-colors text-white"
           >
-            Start
+            Reset
           </button>
-        ) : (
-          <button
-            onClick={pauseTimer}
-            className="bg-orange-600 dark:bg-orange-500 hover:bg-orange-700 dark:hover:bg-orange-600 px-6 py-2 rounded font-semibold transition-colors text-white"
-          >
-            Pause
-          </button>
-        )}
-        <button
-          onClick={resetTimer}
-          className="bg-gray-600 dark:bg-gray-500 hover:bg-gray-700 dark:hover:bg-gray-600 px-6 py-2 rounded font-semibold transition-colors text-white"
-        >
-          Reset
-        </button>
+        </div>
       </div>
     </div>
   )
