@@ -64,6 +64,9 @@ export default function FocusTimer() {
 
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors">
+      <div className="absolute top-4 left-4">
+        <h2 className="text-2xl font-bold">Nagare</h2>
+      </div>
       <div className="absolute top-4 right-4">
         <button
           onClick={() => setIsDark(!isDark)}
@@ -92,7 +95,7 @@ export default function FocusTimer() {
       </div>
 
       <div className="mb-8 text-center">
-        <span className="text-[12rem] font-mono font-bold">{formatTime(timeLeft)}</span>
+        <span className="text-[12rem] font-sans font-bold">{formatTime(timeLeft)}</span>
       </div>
 
       <div className="flex space-x-4">
