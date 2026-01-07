@@ -59,7 +59,7 @@ export default function FocusTimer() {
   }
 
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white transition-colors">
+    <div className="relative flex flex-col items-center justify-center min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors">
       <div className="absolute top-4 right-4">
         <button
           onClick={() => setIsDark(!isDark)}
