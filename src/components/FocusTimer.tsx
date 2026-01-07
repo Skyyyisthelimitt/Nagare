@@ -87,7 +87,7 @@ export default function FocusTimer() {
         />
       </div>
 
-      <div className="mb-8">
+      <div className="mb-8 text-center">
         <span className="text-[12rem] font-mono font-bold">{formatTime(timeLeft)}</span>
       </div>
 
