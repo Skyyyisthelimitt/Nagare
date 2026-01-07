@@ -7,19 +7,10 @@ export default function FocusTimer() {
   const [timeLeft, setTimeLeft] = useState(duration * 60) // seconds
   const [isRunning, setIsRunning] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
-  const [isDark, setIsDark] = useState(true)
 
   useEffect(() => {
     setTimeLeft(duration * 60)
   }, [duration])
-
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-  }, [isDark])
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null
@@ -59,20 +50,7 @@ export default function FocusTimer() {
   }
 
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors">
-      <div className="absolute top-4 right-4">
-        <button
-          onClick={() => setIsDark(!isDark)}
-          className="w-12 h-6 bg-gray-300 dark:bg-gray-600 rounded-full relative transition-colors"
-        >
-          <div
-            className={`w-5 h-5 bg-white dark:bg-gray-800 rounded-full absolute top-0.5 transition-transform ${
-              isDark ? 'translate-x-6' : 'translate-x-0.5'
-            }`}
-          ></div>
-        </button>
-      </div>
-
+    <div className="relative flex flex-col items-center justify-center min-h-screen bg-white text-black transition-colors">
       <h1 className="text-4xl font-bold mb-8">Focus Timer</h1>
       
       <div className="mb-8">
@@ -81,7 +59,7 @@ export default function FocusTimer() {
           type="number"
           value={duration}
           onChange={(e) => setDuration(Number(e.target.value))}
-          className="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-black dark:text-white"
+          className="bg-gray-100 border border-gray-300 rounded px-3 py-2 text-black"
           min="1"
           max="60"
         />
@@ -95,21 +73,21 @@ export default function FocusTimer() {
         {!isRunning ? (
           <button
             onClick={startTimer}
-            className="bg-green-600 dark:bg-green-500 hover:bg-green-700 dark:hover:bg-green-600 px-6 py-2 rounded font-semibold transition-colors text-white"
+            className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded font-semibold transition-colors text-white"
           >
             Start
           </button>
         ) : (
           <button
             onClick={pauseTimer}
-            className="bg-yellow-600 dark:bg-yellow-500 hover:bg-yellow-700 dark:hover:bg-yellow-600 px-6 py-2 rounded font-semibold transition-colors text-white"
+            className="bg-yellow-600 hover:bg-yellow-700 px-6 py-2 rounded font-semibold transition-colors text-white"
           >
             Pause
           </button>
         )}
         <button
           onClick={resetTimer}
-          className="bg-red-600 dark:bg-red-500 hover:bg-red-700 dark:hover:bg-red-600 px-6 py-2 rounded font-semibold transition-colors text-white"
+          className="bg-red-600 hover:bg-red-700 px-6 py-2 rounded font-semibold transition-colors text-white"
         >
           Reset
         </button>
