@@ -1,4 +1,32 @@
+'use client'
+
+import { useState } from 'react'
+import { Clock, CheckSquare, Music } from 'lucide-react'
+
 export default function Home() {
+  const [activeTab, setActiveTab] = useState<'focus' | 'task' | 'music'>('focus')
+
+  const navItems = [
+    {
+      name: "Focus",
+      icon: <Clock className="h-4 w-4 text-black dark:text-white" />,
+      onClick: () => setActiveTab('focus'),
+      active: activeTab === 'focus',
+    },
+    {
+      name: "Task",
+      icon: <CheckSquare className="h-4 w-4 text-black dark:text-white" />,
+      onClick: () => setActiveTab('task'),
+      active: activeTab === 'task',
+    },
+    {
+      name: "Music",
+      icon: <Music className="h-4 w-4 text-black dark:text-white" />,
+      onClick: () => setActiveTab('music'),
+      active: activeTab === 'music',
+    },
+  ]
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
