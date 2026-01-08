@@ -7,19 +7,6 @@ export default function FocusTimer() {
   const [timeLeft, setTimeLeft] = useState(duration * 60) // seconds
   const [isRunning, setIsRunning] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
-  const [isDark, setIsDark] = useState(true)
-
-  useEffect(() => {
-    setTimeLeft(duration * 60)
-  }, [duration])
-
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-  }, [isDark])
 
   useEffect(() => {
     setTimeLeft(duration * 60)
@@ -63,27 +50,9 @@ export default function FocusTimer() {
   }
 
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors">
-      <div className="absolute top-4 left-4">
-        <h2 className="text-2xl font-bold">Nagare</h2>
-      </div>
-      <div className="absolute top-4 right-4">
-        <button
-          onClick={() => setIsDark(!isDark)}
-          className="w-12 h-6 bg-gray-300 dark:bg-gray-600 rounded-full relative transition-colors"
-        >
-          <div
-            className={`w-5 h-5 bg-white dark:bg-gray-800 rounded-full absolute top-0.5 transition-transform ${
-              isDark ? 'translate-x-6' : 'translate-x-0.5'
-            }`}
-          ></div>
-        </button>
-      </div>
-
-      <h1 className="text-4xl font-bold mb-8">Focus Timer</h1>
-      
+    <div className="flex flex-col items-center justify-center h-full">
       <div className="mb-8">
-        <label className="block text-sm font-medium mb-2">Duration (minutes):</label>
+        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Duration (minutes):</label>
         <input
           type="number"
           value={duration}
@@ -95,7 +64,7 @@ export default function FocusTimer() {
       </div>
 
       <div className="mb-8 text-center">
-        <span className="text-[12rem] font-mono font-bold">{formatTime(timeLeft)}</span>
+        <span className="text-[10rem] font-mono font-bold">{formatTime(timeLeft)}</span>
       </div>
 
       <div className="flex space-x-4">
