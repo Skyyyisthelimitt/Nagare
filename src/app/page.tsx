@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { FloatingNav } from '@/components/ui/floating-navbar'
 import FocusTimer from '@/components/FocusTimer'
 import MusicTab from '@/components/MusicTab'
@@ -35,10 +36,20 @@ export default function Home() {
   return (
     <div className="relative w-full min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors">
       <FloatingNav navItems={navItems} />
-      
-      {/* Theme Toggle - Fixed position */}
-      <div className="fixed top-10 right-10 z-[5001]">
-        <ThemeToggle />
+
+      {/* Header Container - Aligns Logo and Theme Toggle */}
+      <div className="fixed top-8 inset-x-0 z-[5001] flex items-center justify-between px-10 pointer-events-none">
+        {/* Logo */}
+        <div className="pointer-events-auto">
+          <div className="w-16 h-16 bg-white dark:bg-black border-4 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-xl flex items-center justify-center">
+            <span className="text-4xl font-black text-black dark:text-white select-none">N</span>
+          </div>
+        </div>
+
+        {/* Theme Toggle */}
+        <div className="pointer-events-auto">
+          <ThemeToggle />
+        </div>
       </div>
 
       {/* Content */}

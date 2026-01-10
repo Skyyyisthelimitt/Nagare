@@ -54,13 +54,12 @@ export default function FocusTimer() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-full relative">
-      {/* Timer Display - Centered and Bigger */}
-      <div className="mb-12 text-center">
-        <span className="text-[16rem] font-sans font-bold tracking-tight">{formatTime(elapsedTime)}</span>
+    <div className="flex flex-col items-center h-full w-full relative">
+      {/* Timer Display - Occupies available space to center itself */}
+      <div className="flex-1 flex items-center justify-center z-10">
+        <span className="text-[16rem] font-sans font-bold tracking-tight leading-none text-black dark:text-white select-none">{formatTime(elapsedTime)}</span>
       </div>
 
-      {/* Settings Modal */}
       {/* Settings Modal */}
       {showSettings && (
         <div className="fixed inset-0 bg-black/60 dark:bg-white/10 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setShowSettings(false)}>
@@ -92,8 +91,8 @@ export default function FocusTimer() {
         </div>
       )}
 
-      {/* Buttons */}
-      <div className="flex space-x-6 items-center">
+      {/* Buttons - Anchored to bottom */}
+      <div className="flex space-x-6 items-center pb-32 z-10">
         {!isRunning && !isPaused ? (
           <>
             <button
