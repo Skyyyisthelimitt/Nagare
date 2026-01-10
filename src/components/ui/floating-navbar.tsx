@@ -57,7 +57,7 @@ export const FloatingNav = ({
           duration: 0.2,
         }}
         className={cn(
-          "flex max-w-fit fixed top-10 inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] rounded-full dark:bg-black bg-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02)] z-[5000] pr-2 pl-8 py-2 items-center justify-center space-x-4",
+          "flex max-w-fit fixed top-10 inset-x-0 mx-auto bg-white dark:bg-black border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-2xl z-[5000] p-2 items-center justify-center space-x-2",
           className
         )}
       >
@@ -66,12 +66,15 @@ export const FloatingNav = ({
             key={`link-${idx}`}
             onClick={() => navItem.onClick?.()}
             className={cn(
-              "relative dark:text-neutral-50 items-center flex space-x-2 text-neutral-600 dark:hover:text-neutral-300 hover:text-neutral-500 transition-colors px-4 py-2 rounded-full",
-              navItem.active && "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
+              "relative flex items-center space-x-2 px-6 py-2 rounded-xl transition-all duration-200 border-2 border-transparent",
+              "hover:translate-y-[-1px] hover:translate-x-[-1px]",
+              navItem.active 
+                ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(100,100,100,0.5)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.5)]" 
+                : "text-neutral-500 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-900"
             )}
           >
-            {navItem.icon && <span>{navItem.icon}</span>}
-            <span className="text-sm font-medium">{navItem.name}</span>
+            {navItem.icon && <span className="[&>svg]:w-5 [&>svg]:h-5 [&>svg]:stroke-[2.5]">{navItem.icon}</span>}
+            <span className="text-sm font-black uppercase tracking-wider">{navItem.name}</span>
           </button>
         ))}
       </motion.div>

@@ -61,48 +61,52 @@ export default function FocusTimer() {
       </div>
 
       {/* Settings Modal */}
+      {/* Settings Modal */}
       {showSettings && (
-        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50" onClick={() => setShowSettings(false)}>
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white font-sans">Settings</h2>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300 font-sans">
-                Duration (minutes):
+        <div className="fixed inset-0 bg-black/60 dark:bg-white/10 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setShowSettings(false)}>
+          <div 
+            className="bg-white dark:bg-black border-4 border-black dark:border-white rounded-xl p-8 max-w-sm w-full mx-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]" 
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-4xl font-black mb-8 text-black dark:text-white uppercase tracking-tight text-center">Settings</h2>
+            <div className="mb-8">
+              <label className="block text-lg font-black uppercase tracking-wide mb-3 text-black dark:text-white">
+                Duration (minutes)
               </label>
               <input
                 type="number"
                 value={duration}
                 onChange={(e) => setDuration(Number(e.target.value))}
-                className="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-black dark:text-white font-sans"
+                className="w-full bg-white dark:bg-black text-black dark:text-white border-4 border-black dark:border-white rounded-lg px-4 py-3 text-2xl font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] focus:outline-none focus:translate-x-[2px] focus:translate-y-[2px] focus:shadow-none transition-all"
                 min="1"
                 max="60"
               />
             </div>
             <button
               onClick={() => setShowSettings(false)}
-              className="w-full bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 px-6 py-2 rounded font-semibold transition-colors text-white font-sans"
+              className="w-full group relative px-8 py-3 bg-black dark:bg-white text-white dark:text-black font-black text-2xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
             >
-              Close
+              Save & Close
             </button>
           </div>
         </div>
       )}
 
       {/* Buttons */}
-      <div className="flex space-x-4 items-center">
+      <div className="flex space-x-6 items-center">
         {!isRunning && !isPaused ? (
           <>
             <button
               onClick={startTimer}
-              className="bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 px-6 py-2 rounded font-semibold transition-colors text-white font-sans"
+              className="group relative px-8 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-2xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
             >
               Start
             </button>
             <button
               onClick={() => setShowSettings(true)}
-              className="bg-gray-600 dark:bg-gray-500 hover:bg-gray-700 dark:hover:bg-gray-600 px-6 py-2 rounded font-semibold transition-colors text-white font-sans flex items-center gap-2"
+              className="group relative px-8 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-2xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
             >
-              <IconSettings className="h-5 w-5" />
+              <IconSettings className="h-7 w-7" stroke={2.5} />
               Settings
             </button>
           </>
@@ -111,27 +115,27 @@ export default function FocusTimer() {
             {isPaused ? (
               <button
                 onClick={resumeTimer}
-                className="bg-green-600 dark:bg-green-500 hover:bg-green-700 dark:hover:bg-green-600 px-6 py-2 rounded font-semibold transition-colors text-white font-sans"
+                className="group relative px-8 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-2xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
               >
                 Resume
               </button>
             ) : (
               <button
                 onClick={pauseTimer}
-                className="bg-orange-600 dark:bg-orange-500 hover:bg-orange-700 dark:hover:bg-orange-600 px-6 py-2 rounded font-semibold transition-colors text-white font-sans"
+                className="group relative px-8 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-2xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
               >
                 Pause
               </button>
             )}
             <button
               onClick={stopTimer}
-              className="bg-red-600 dark:bg-red-500 hover:bg-red-700 dark:hover:bg-red-600 px-6 py-2 rounded font-semibold transition-colors text-white font-sans"
+              className="group relative px-8 py-3 bg-red-500 text-white font-black text-2xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
             >
               Stop
             </button>
             <button
               onClick={resetTimer}
-              className="bg-gray-600 dark:bg-gray-500 hover:bg-gray-700 dark:hover:bg-gray-600 px-6 py-2 rounded font-semibold transition-colors text-white font-sans"
+              className="group relative px-8 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-2xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
             >
               Reset
             </button>

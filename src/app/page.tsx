@@ -14,19 +14,19 @@ export default function Home() {
   const navItems = [
     {
       name: "Focus",
-      icon: <IconClock className="h-4 w-4 text-neutral-500 dark:text-white" />,
+      icon: <IconClock className="w-full h-full" />,
       onClick: () => setActiveTab('focus'),
       active: activeTab === 'focus',
     },
     {
       name: "Task",
-      icon: <IconChecklist className="h-4 w-4 text-neutral-500 dark:text-white" />,
+      icon: <IconChecklist className="w-full h-full" />,
       onClick: () => setActiveTab('task'),
       active: activeTab === 'task',
     },
     {
       name: "Music",
-      icon: <IconMusic className="h-4 w-4 text-neutral-500 dark:text-white" />,
+      icon: <IconMusic className="w-full h-full" />,
       onClick: () => setActiveTab('music'),
       active: activeTab === 'music',
     },
