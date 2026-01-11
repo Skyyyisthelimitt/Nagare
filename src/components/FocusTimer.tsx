@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { IconSettings } from '@tabler/icons-react'
+import { PlayIcon, Setting07Icon, PauseIcon, StopIcon, ReloadIcon } from 'hugeicons-react'
 
 export default function FocusTimer() {
+// ... (lines 7-95 unchanged, I will use a larger replacement to cover imports and the button block)
   const [duration, setDuration] = useState(25) // minutes (kept for settings, not used for timer)
   const [elapsedTime, setElapsedTime] = useState(0) // seconds
   const [isRunning, setIsRunning] = useState(false)
@@ -97,16 +98,19 @@ export default function FocusTimer() {
           <>
             <button
               onClick={startTimer}
-              className="group relative px-8 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-2xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+              className="group relative px-5 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+              title="Start"
             >
-              Start
+              <PlayIcon size={24} className="text-black dark:text-white fill-current" />
+              <span>Start</span>
             </button>
             <button
               onClick={() => setShowSettings(true)}
-              className="group relative px-8 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-2xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+              className="group relative px-5 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+              title="Settings"
             >
-              <IconSettings className="h-7 w-7" stroke={2.5} />
-              Settings
+              <Setting07Icon size={24} className="text-black dark:text-white" />
+              <span>Settings</span>
             </button>
           </>
         ) : (
@@ -114,29 +118,37 @@ export default function FocusTimer() {
             {isPaused ? (
               <button
                 onClick={resumeTimer}
-                className="group relative px-8 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-2xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+                className="group relative px-5 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+                title="Resume"
               >
-                Resume
+                <PlayIcon size={24} className="text-black dark:text-white fill-current" />
+                <span>Resume</span>
               </button>
             ) : (
               <button
                 onClick={pauseTimer}
-                className="group relative px-8 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-2xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+                className="group relative px-5 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+                title="Pause"
               >
-                Pause
+                <PauseIcon size={24} className="text-black dark:text-white fill-current" />
+                <span>Pause</span>
               </button>
             )}
             <button
               onClick={stopTimer}
-              className="group relative px-8 py-3 bg-red-500 text-white font-black text-2xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+              className="group relative px-5 py-3 bg-red-500 text-white font-black text-xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+              title="Stop"
             >
-              Stop
+              <StopIcon size={24} className="text-white fill-current" />
+              <span>Stop</span>
             </button>
             <button
               onClick={resetTimer}
-              className="group relative px-8 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-2xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+              className="group relative px-5 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+              title="Reset"
             >
-              Reset
+              <ReloadIcon size={24} className="text-black dark:text-white" />
+              <span>Reset</span>
             </button>
           </>
         )}
