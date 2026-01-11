@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
 import { FloatingNav } from '@/components/ui/floating-navbar'
 import FocusTimer from '@/components/FocusTimer'
 import MusicTab from '@/components/MusicTab'
@@ -10,6 +9,8 @@ import ThemeToggle from '@/components/ThemeToggle'
 import MiniPlayer from '@/components/MiniPlayer'
 import { IconClock, IconMusic, IconChecklist } from '@tabler/icons-react'
 import { MusicProvider } from '@/context/MusicContext'
+import { TaskProvider } from '@/context/TaskContext'
+
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'focus' | 'task' | 'music'>('focus')
@@ -37,7 +38,8 @@ export default function Home() {
 
   return (
     <MusicProvider>
-      <div className="relative w-full min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors">
+      <TaskProvider>
+        <div className="relative w-full min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors">
         <FloatingNav navItems={navItems} />
 
         {/* Header Container - Aligns Logo and Theme Toggle */}
@@ -69,6 +71,7 @@ export default function Home() {
           {activeTab === 'music' && <MusicTab />}
         </div>
       </div>
+    </TaskProvider>
     </MusicProvider>
   )
 }

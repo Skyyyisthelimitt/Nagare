@@ -4,19 +4,7 @@ import { useState } from 'react'
 import { IconCalendar, IconX, IconPlus, IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 import { Task01Icon, Loading01Icon, Tick03Icon } from 'hugeicons-react'
 
-type TaskStatus = 'planned' | 'in-progress' | 'done'
-
-type Priority = 'low' | 'medium' | 'high' | 'urgent'
-
-interface Task {
-  id: string
-  title: string
-  note: string
-  status: TaskStatus
-  priority: Priority
-  tags: string[]
-  date: Date | null
-}
+import { useTasks, type Task, type TaskStatus, type Priority } from '@/context/TaskContext'
 
 const formatDate = (date: Date | null) => {
   if (!date) return ''
@@ -38,7 +26,7 @@ const isOverdue = (date: Date | null) => {
 }
 
 export default function TaskTab() {
-  const [tasks, setTasks] = useState<Task[]>([])
+  const { tasks, addTask: saveTask, moveTask, deleteTask } = useTasks()
   const [draggedTask, setDraggedTask] = useState<Task | null>(null)
   const [showAddTask, setShowAddTask] = useState(false)
   const [selectedColumn, setSelectedColumn] = useState<TaskStatus | null>(null)
@@ -66,17 +54,16 @@ export default function TaskTab() {
     if (!newTask.title.trim()) return
 
     const finalStatus = selectedColumn || status
-    const task: Task = {
-      id: Date.now().toString(),
+    
+    saveTask({
       title: newTask.title,
       note: newTask.note,
       status: finalStatus,
       priority: newTask.priority,
       tags: newTask.tags,
       date: newTask.date,
-    }
+    })
 
-    setTasks([...tasks, task])
     setNewTask({ title: '', note: '', priority: 'medium', tags: [], date: null })
     setTagInput('')
     setShowAddTask(false)
@@ -99,16 +86,6 @@ export default function TaskTab() {
       moveTask(draggedTask.id, status)
       setDraggedTask(null)
     }
-  }
-
-  const moveTask = (taskId: string, newStatus: TaskStatus) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId ? { ...task, status: newStatus } : task
-    ))
-  }
-
-  const deleteTask = (taskId: string) => {
-    setTasks(tasks.filter(task => task.id !== taskId))
   }
 
   const addTag = () => {

@@ -13,19 +13,16 @@ export interface YTTrack {
 // Search for songs via our API route
 export async function searchSongs(query: string, limit: number = 10): Promise<YTTrack[]> {
   try {
-    console.log('Searching for:', query)
     
     const response = await fetch(`/api/music/search?q=${encodeURIComponent(query)}&limit=${limit}`)
     const data = await response.json()
     
-    console.log('API Response:', data)
     
     if (data.tracks && Array.isArray(data.tracks)) {
       return data.tracks
     }
     
     // Fallback to hardcoded tracks if API fails
-    console.warn('API returned no tracks, using fallback')
     return generateFallbackTracks(query, limit)
   } catch (error) {
     console.error('Search error:', error)

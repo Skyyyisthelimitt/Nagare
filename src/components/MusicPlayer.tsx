@@ -1,285 +1,265 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import React, { useState } from 'react'
+import { PlayIcon, PauseIcon, PreviousIcon, NextIcon, MusicNote01Icon, VolumeHighIcon, VolumeOffIcon } from 'hugeicons-react'
+import { useMusic } from '@/context/MusicContext'
 
-interface Track {
-  id: string
-  title: string
-  artist: string
-  videoId: string
-  mood: string
-}
+export default function MusicPlayer() {
+  const {
+    playlist,
+    currentTrackIndex,
+    setCurrentTrackIndex,
+    isPlaying,
+    volume,
+    setVolume,
+    isMuted,
+    currentTime,
+    duration,
+    togglePlay,
+    playCurrentTrack,
+    nextTrack,
+    prevTrack,
+    toggleMute,
+    seekTo,
+    isLoading
+  } = useMusic()
 
-interface MusicPlayerProps {
-  mood: string | null
-  desiredMood: string | null
-}
+  const [showVolume, setShowVolume] = useState(false)
 
-// Curated playlist mapping moods to YouTube video IDs
-// In production, you'd fetch these from YouTube API based on search queries
-const moodPlaylists: Record<string, Track[]> = {
-  happy: [
-    { id: '1', title: 'Happy - Pharrell Williams', artist: 'Pharrell Williams', videoId: 'ZbZSe6N_BXs', mood: 'happy' },
-    { id: '2', title: 'Can\'t Stop the Feeling', artist: 'Justin Timberlake', videoId: 'ru0K8uYEZWw', mood: 'happy' },
-    { id: '3', title: 'Walking on Sunshine', artist: 'Katrina & The Waves', videoId: 'iPUmE-tne5U', mood: 'happy' },
-  ],
-  sad: [
-    { id: '4', title: 'Someone Like You', artist: 'Adele', videoId: 'hLQl3WQQoQ0', mood: 'sad' },
-    { id: '5', title: 'Fix You', artist: 'Coldplay', videoId: 'k4V3Mo61fJM', mood: 'sad' },
-  ],
-  calm: [
-    { id: '6', title: 'Weightless', artist: 'Marconi Union', videoId: 'UfcAVejslrU', mood: 'calm' },
-    { id: '7', title: 'Strawberry Swing', artist: 'Coldplay', videoId: 'h3pJZ6J8Jj4', mood: 'calm' },
-  ],
-  energetic: [
-    { id: '8', title: 'Eye of the Tiger', artist: 'Survivor', videoId: 'btPJPFnesV4', mood: 'energetic' },
-    { id: '9', title: 'Stronger', artist: 'Kanye West', videoId: 'PsO6ZnUZ0Ts', mood: 'energetic' },
-  ],
-  focused: [
-    { id: '10', title: 'Lofi Hip Hop', artist: 'ChilledCow', videoId: 'jfKfPfyJRdk', mood: 'focused' },
-    { id: '11', title: 'Deep Focus', artist: 'Brain.fm', videoId: '5qap5aO4i9A', mood: 'focused' },
-  ],
-  anxious: [
-    { id: '12', title: 'Weightless', artist: 'Marconi Union', videoId: 'UfcAVejslrU', mood: 'anxious' },
-    { id: '13', title: 'Meditation Music', artist: 'Relaxing Music', videoId: '1ZYbU82GVz4', mood: 'anxious' },
-  ],
-}
-
-export default function MusicPlayer({ mood, desiredMood }: MusicPlayerProps) {
-  const [playlist, setPlaylist] = useState<Track[]>([])
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [playerReady, setPlayerReady] = useState(false)
-  const youtubePlayerRef = useRef<any>(null)
-  const playlistRef = useRef<Track[]>([])
-  const currentTrackIndexRef = useRef(0)
-
-  // Keep refs in sync with state
-  useEffect(() => {
-    playlistRef.current = playlist
-  }, [playlist])
-
-  useEffect(() => {
-    currentTrackIndexRef.current = currentTrackIndex
-  }, [currentTrackIndex])
-
-  // Initialize YouTube IFrame API
-  useEffect(() => {
-    // Load YouTube IFrame API script
-    if (!window.YT) {
-      const tag = document.createElement('script')
-      tag.src = 'https://www.youtube.com/iframe_api'
-      const firstScriptTag = document.getElementsByTagName('script')[0]
-      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag)
-
-      window.onYouTubeIframeAPIReady = () => {
-        setPlayerReady(true)
-      }
-    } else if (window.YT.Player) {
-      setPlayerReady(true)
-    }
-  }, [])
-
-  // Initialize YouTube player when ready
-  useEffect(() => {
-    if (playerReady && window.YT && window.YT.Player && !youtubePlayerRef.current) {
-      // @ts-ignore
-      youtubePlayerRef.current = new window.YT.Player('youtube-player', {
-        height: '0',
-        width: '0',
-        playerVars: {
-          autoplay: 0,
-          controls: 0,
-          disablekb: 1,
-          enablejsapi: 1,
-          fs: 0,
-          iv_load_policy: 3,
-          modestbranding: 1,
-          playsinline: 1,
-          rel: 0,
-        },
-        events: {
-          onReady: () => {
-            console.log('YouTube player ready')
-          },
-          onStateChange: (event: any) => {
-            // Auto-play next track when current ends
-            if (event.data === 0 && playlistRef.current.length > 0) {
-              const nextIndex = (currentTrackIndexRef.current + 1) % playlistRef.current.length
-              setCurrentTrackIndex(nextIndex)
-              setIsPlaying(false)
-              setTimeout(() => {
-                if (youtubePlayerRef.current && playlistRef.current[nextIndex]) {
-                  youtubePlayerRef.current.loadVideoById(playlistRef.current[nextIndex].videoId)
-                  youtubePlayerRef.current.playVideo()
-                  setIsPlaying(true)
-                }
-              }, 100)
-            }
-          },
-        },
-      })
-    }
-  }, [playerReady])
-
-  // Generate playlist when mood is detected
-  useEffect(() => {
-    if (desiredMood && moodPlaylists[desiredMood]) {
-      setPlaylist(moodPlaylists[desiredMood])
-      setCurrentTrackIndex(0)
-      setIsPlaying(false)
-    }
-  }, [desiredMood, mood])
-
-  // Play current track
-  const playCurrentTrack = () => {
-    if (youtubePlayerRef.current && playlist[currentTrackIndex]) {
-      youtubePlayerRef.current.loadVideoById(playlist[currentTrackIndex].videoId)
-      youtubePlayerRef.current.playVideo()
-      setIsPlaying(true)
-    }
+  const formatTime = (seconds: number) => {
+    if (isNaN(seconds)) return '0:00'
+    const mins = Math.floor(seconds / 60)
+    const secs = Math.floor(seconds % 60)
+    return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
-  // Pause current track
-  const pauseCurrentTrack = () => {
-    if (youtubePlayerRef.current) {
-      youtubePlayerRef.current.pauseVideo()
-      setIsPlaying(false)
-    }
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    seekTo(parseFloat(e.target.value))
   }
 
-  const handlePlayPause = () => {
-    if (isPlaying) {
-      pauseCurrentTrack()
-    } else {
-      playCurrentTrack()
-    }
-  }
-
-  const handleNext = () => {
-    if (playlist.length > 0) {
-      const nextIndex = (currentTrackIndex + 1) % playlist.length
-      setCurrentTrackIndex(nextIndex)
-      setIsPlaying(false)
-      // Auto-play next track
-      setTimeout(() => {
-        if (youtubePlayerRef.current) {
-          youtubePlayerRef.current.loadVideoById(playlist[nextIndex].videoId)
-          youtubePlayerRef.current.playVideo()
-          setIsPlaying(true)
-        }
-      }, 100)
-    }
-  }
-
-  const handlePrevious = () => {
-    if (playlist.length > 0) {
-      const prevIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length
-      setCurrentTrackIndex(prevIndex)
-      setIsPlaying(false)
-      setTimeout(() => {
-        if (youtubePlayerRef.current) {
-          youtubePlayerRef.current.loadVideoById(playlist[prevIndex].videoId)
-          youtubePlayerRef.current.playVideo()
-          setIsPlaying(true)
-        }
-      }, 100)
-    }
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setVolume(parseInt(e.target.value))
   }
 
   const currentTrack = playlist[currentTrackIndex]
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-      {/* Hidden YouTube player */}
-      <div id="youtube-player" className="hidden"></div>
+    <div className="flex flex-col h-full bg-white dark:bg-black border-4 border-black dark:border-white rounded-2xl shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] overflow-hidden">
+      {/* Header Container */}
+      <div className="bg-white dark:bg-black px-4 py-4 border-b-4 border-black dark:border-white flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 flex items-center justify-center bg-orange-200 dark:bg-orange-800 border-2 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+            <MusicNote01Icon size={28} className="text-black dark:text-white" />
+          </div>
+          <h3 className="font-black text-xl text-black dark:text-white uppercase tracking-tight">
+            Music Player
+          </h3>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="w-10 h-10 flex items-center justify-center bg-black dark:bg-white text-white dark:text-black rounded-lg border-2 border-black dark:border-white font-bold text-base shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+            {playlist.length}
+          </span>
+        </div>
+      </div>
 
-      {/* Playlist Display */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-2 mb-4">
-        {playlist.length === 0 ? (
-          <div className="text-center text-gray-500 dark:text-gray-400 py-8">
-            <p className="text-lg">No playlist yet</p>
-            <p className="text-sm mt-2">Tell me how you're feeling to get started! 🎵</p>
+      {/* Playlist Content */}
+      <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
+        {isLoading ? (
+          <div className="h-full flex flex-col items-center justify-center text-center p-8 space-y-4">
+            <div className="w-20 h-20 bg-blue-200 dark:bg-blue-800 border-4 border-black dark:border-white rounded-2xl flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] animate-pulse">
+              <MusicNote01Icon size={40} className="text-black dark:text-white" />
+            </div>
+            <div>
+              <p className="text-xl font-black uppercase text-black dark:text-white">Searching...</p>
+              <p className="text-sm font-medium text-zinc-500 mt-2">Finding the perfect tracks for you! 🎵</p>
+            </div>
+          </div>
+        ) : playlist.length === 0 ? (
+          <div className="h-full flex flex-col items-center justify-center text-center p-8 space-y-4">
+            <div className="w-20 h-20 bg-zinc-100 dark:bg-zinc-900 border-4 border-black dark:border-white rounded-2xl flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+              <MusicNote01Icon size={40} className="text-zinc-400" />
+            </div>
+            <div>
+              <p className="text-xl font-black uppercase text-black dark:text-white">No tracks loaded</p>
+              <p className="text-sm font-medium text-zinc-500 mt-2">Chat with the mood bot to generate a playlist! 💬</p>
+            </div>
           </div>
         ) : (
-          <>
-            <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
-              {desiredMood ? `${desiredMood.charAt(0).toUpperCase() + desiredMood.slice(1)} Playlist` : 'Your Playlist'}
-            </h3>
+          <div className="space-y-4">
             {playlist.map((track, idx) => (
               <div
                 key={track.id}
-                className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                  idx === currentTrackIndex
-                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100'
-                    : 'bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100'
-                }`}
                 onClick={() => {
                   setCurrentTrackIndex(idx)
-                  setIsPlaying(false)
                   setTimeout(() => playCurrentTrack(), 100)
                 }}
+                className={`group relative p-3 border-2 border-black dark:border-white rounded-xl cursor-pointer transition-all ${
+                  idx === currentTrackIndex
+                    ? 'bg-blue-200 dark:bg-blue-800 translate-x-[-2px] translate-y-[-2px] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_2px_rgba(255,255,255,1)]'
+                    : 'bg-white dark:bg-zinc-900 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]'
+                }`}
               >
-                <div className="font-medium">{track.title}</div>
-                <div className="text-sm opacity-75">{track.artist}</div>
+                <div className="flex items-center gap-3">
+                  <div className="relative w-12 h-12 flex-shrink-0">
+                    {track.thumbnail ? (
+                      <img 
+                        src={track.thumbnail} 
+                        alt={track.title}
+                        className="w-full h-full object-cover rounded-lg border-2 border-black dark:border-white"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center border-2 border-black dark:border-white rounded-lg bg-zinc-200 dark:bg-zinc-800">
+                        <MusicNote01Icon size={20} className="text-zinc-500" />
+                      </div>
+                    )}
+                    {idx === currentTrackIndex && isPlaying && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-lg">
+                        <div className="flex items-end gap-0.5 h-4">
+                          <div className="w-1 bg-white animate-music-bar-1"></div>
+                          <div className="w-1 bg-white animate-music-bar-2"></div>
+                          <div className="w-1 bg-white animate-music-bar-3"></div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-black truncate text-sm tracking-tight">{track.title}</div>
+                    <div className="text-xs font-bold text-zinc-500 dark:text-zinc-400">{track.artist}</div>
+                  </div>
+                </div>
               </div>
             ))}
-          </>
+          </div>
         )}
       </div>
 
-      {/* Player Controls */}
-      {currentTrack && (
-        <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800">
-          <div className="mb-3">
-            <div className="font-semibold text-gray-900 dark:text-gray-100">{currentTrack.title}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">{currentTrack.artist}</div>
-          </div>
-          <div className="flex items-center justify-center space-x-4">
-            <button
-              onClick={handlePrevious}
-              disabled={playlist.length === 0}
-              className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M8.445 14.832A1 1 0 0010 14v-2.798l5.445 3.63A1 1 0 0017 14V6a1 1 0 00-1.555-.832L10 8.798V6a1 1 0 00-1.555-.832l-6 4a1 1 0 000 1.664l6 4z" />
-              </svg>
-            </button>
-            <button
-              onClick={handlePlayPause}
-              disabled={playlist.length === 0}
-              className="p-4 rounded-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-white"
-            >
-              {isPlaying ? (
-                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
+      {/* Fixed Player Controls */}
+      <div className="border-t-4 border-black dark:border-white p-6 bg-zinc-50 dark:bg-zinc-950">
+        <div className="flex flex-col gap-6">
+          {/* Top Row: Track Info and Progress */}
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4 min-w-0 max-w-[40%]">
+              {currentTrack ? (
+                <>
+                  <div className="w-14 h-14 bg-orange-200 dark:bg-orange-800 border-2 border-black dark:border-white rounded-2xl flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex-shrink-0 overflow-hidden">
+                    {currentTrack.thumbnail ? (
+                      <img src={currentTrack.thumbnail} alt={currentTrack.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <MusicNote01Icon size={28} className="text-black dark:text-white" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-black truncate uppercase tracking-tighter text-black dark:text-white text-base">
+                      {currentTrack.title}
+                    </div>
+                    <div className="text-xs font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest truncate">
+                      {currentTrack.artist}
+                    </div>
+                  </div>
+                </>
               ) : (
-                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                </svg>
+                <div className="flex items-center gap-4 opacity-30">
+                  <div className="w-14 h-14 bg-zinc-200 dark:bg-zinc-800 border-2 border-black dark:border-white rounded-2xl"></div>
+                  <div className="flex-1 space-y-2">
+                    <div className="h-5 w-32 bg-zinc-200 dark:bg-zinc-800 rounded-lg"></div>
+                    <div className="h-3 w-20 bg-zinc-200 dark:bg-zinc-800 rounded-lg"></div>
+                  </div>
+                </div>
               )}
-            </button>
-            <button
-              onClick={handleNext}
-              disabled={playlist.length === 0}
-              className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M4.555 5.168A1 1 0 003 6v8a1 1 0 001.555.832L10 11.202V14a1 1 0 001.555.832l6-4a1 1 0 000-1.664l-6-4A1 1 0 0011 6v2.798l-5.445-3.63z" />
-              </svg>
-            </button>
+            </div>
+
+            <div className="flex-1 flex flex-col gap-1">
+              <input
+                type="range"
+                min="0"
+                max={duration || 100}
+                value={currentTime}
+                onChange={handleSeek}
+                disabled={playlist.length === 0}
+                className="w-full h-3 appearance-none bg-zinc-200 dark:bg-zinc-800 border-2 border-black dark:border-white rounded-lg cursor-pointer accent-black dark:accent-white overflow-hidden shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+              />
+              <div className="flex justify-between text-[11px] font-black uppercase tracking-tighter text-zinc-500">
+                <span>{formatTime(currentTime)}</span>
+                <span>{formatTime(duration)}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative flex items-center justify-between">
+            <div className="w-1/3">
+              <button
+                onClick={toggleMute}
+                disabled={playlist.length === 0}
+                className="group relative w-12 h-12 bg-white dark:bg-zinc-800 border-2 border-black dark:border-white rounded-xl flex items-center justify-center transition-all active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:enabled:translate-y-[-2px] hover:enabled:translate-x-[-2px] hover:enabled:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:enabled:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                {isMuted ? (
+                  <VolumeOffIcon size={24} className="text-red-500" />
+                ) : (
+                  <VolumeHighIcon size={24} className="text-black dark:text-white" />
+                )}
+              </button>
+            </div>
+
+            <div className="flex items-center justify-center gap-4 sm:gap-6 absolute left-1/2 -translate-x-1/2">
+              <button
+                onClick={prevTrack}
+                disabled={playlist.length === 0}
+                className="group relative w-12 h-12 bg-blue-100 dark:bg-blue-800 border-2 border-black dark:border-white rounded-xl flex items-center justify-center transition-all active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:enabled:translate-y-[-2px] hover:enabled:translate-x-[-2px] hover:enabled:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:enabled:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <PreviousIcon size={24} className="text-black dark:text-white fill-current" />
+              </button>
+
+              <button
+                onClick={togglePlay}
+                disabled={playlist.length === 0}
+                className="group relative w-16 h-16 bg-orange-400 dark:bg-orange-600 text-white border-2 border-black dark:border-white rounded-2xl flex items-center justify-center transition-all active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:enabled:translate-y-[-2px] hover:enabled:translate-x-[-2px] hover:enabled:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:hover:enabled:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                {isPlaying ? (
+                  <PauseIcon size={32} className="text-white fill-current" />
+                ) : (
+                  <PlayIcon size={32} className="text-white fill-current ml-1" />
+                )}
+              </button>
+
+              <button
+                onClick={nextTrack}
+                disabled={playlist.length === 0}
+                className="group relative w-12 h-12 bg-blue-100 dark:bg-blue-800 border-2 border-black dark:border-white rounded-xl flex items-center justify-center transition-all active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:enabled:translate-y-[-2px] hover:enabled:translate-x-[-2px] hover:enabled:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:enabled:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <NextIcon size={24} className="text-black dark:text-white fill-current" />
+              </button>
+            </div>
+
+            <div className="flex items-center w-1/3 justify-end">
+              <div className="relative flex items-center">
+                <button
+                  onClick={() => setShowVolume(!showVolume)}
+                  disabled={playlist.length === 0}
+                  className="group relative w-12 h-12 bg-white dark:bg-zinc-800 border-2 border-black dark:border-white rounded-xl flex items-center justify-center transition-all active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:enabled:translate-y-[-2px] hover:enabled:translate-x-[-2px] hover:enabled:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:enabled:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <VolumeHighIcon size={24} className="text-black dark:text-white" />
+                </button>
+                
+                {showVolume && playlist.length > 0 && (
+                  <div className="absolute bottom-full right-0 mb-4 bg-white dark:bg-black border-4 border-black dark:border-white p-3 rounded-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] w-32 animate-in fade-in slide-in-from-bottom-2 z-20">
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={volume}
+                      onChange={handleVolumeChange}
+                      className="w-full h-8 appearance-none bg-blue-100 dark:bg-blue-900 border-2 border-black dark:border-white rounded-lg cursor-pointer accent-black dark:accent-white"
+                    />
+                    <div className="text-center mt-2 font-black text-xs uppercase tracking-tighter text-black dark:text-white">
+                      Volume: {volume}%
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   )
-}
-
-// Extend Window interface for YouTube API
-declare global {
-  interface Window {
-    YT: any
-    onYouTubeIframeAPIReady: () => void
-  }
 }
