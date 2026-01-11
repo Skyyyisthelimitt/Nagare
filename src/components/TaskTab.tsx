@@ -239,7 +239,7 @@ export default function TaskTab() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-150px)] w-full max-w-7xl mx-auto px-4 pb-15">
+    <div className="flex flex-col items-center w-full max-w-7xl mx-auto py-8 px-4 pb-24">
       <div className="w-full">
         {/* Kanban Board */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
