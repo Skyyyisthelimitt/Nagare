@@ -4,14 +4,14 @@ Nagare is a minimalist productivity platform designed for focus and workflow man
 
 ## Core Features
 
-- **Sequential Focus Timer**: A clean, distraction-free timer to manage work sessions.
+- **Flexible Focus Timer**: A clean, distraction-free timer with Indefinite Mode and immersive Full Screen support.
 - **Kanban Task Management**: Organise workflows with persistent Todo, In Progress, and Done boards.
 - **AI-Driven Music Experience**:
   - Global playback context that continues across all tabs.
   - Natural language mood analysis via Gemini AI.
   - Integrated YouTube Music search for high-quality audio streaming.
   - Floating mini-player for quick control while focused on other tasks.
-- **Neobrutalist Design**: High-contrast, accessibility-focused interface with support for adaptive light and dark modes.
+- **Neobrutalist Design**: High-contrast, accessibility-focused interface with support for adaptive light/dark modes and custom color palettes (Soft Slate, Warm, Nordic).
 
 ## Technical Stack
 
@@ -21,3 +21,4 @@ Nagare is a minimalist productivity platform designed for focus and workflow man
 - **AI Integration**: Google Gemini AI (Generative AI SDK)
 - **Music Engine**: YouTube IFrame API / ytmusic-api
 - **Persistence**: Browser LocalStorage for sessions and task states
+- **License**: MIT
