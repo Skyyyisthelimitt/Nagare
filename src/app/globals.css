@@ -2,6 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Palette System */
+:root,
+html[data-palette="default"] {
+  --white-color: #FFFFFF;
+  --black-color: #000000;
+}
+.dark,
+html.dark[data-palette="default"] {
+  --white-color: #FFFFFF;
+  --black-color: #000000;
+}
+
+/* Option 1: Soft Slate */
+html[data-palette="option1"] {
+  --white-color: #F8FAFC;
+  --black-color: #1E293B;
+}
+html.dark[data-palette="option1"] {
+  --white-color: #E2E8F0;
+  --black-color: #0F172A;
+}
+
+/* Option 2: Warm Minimalist */
+html[data-palette="option2"] {
+  --white-color: #F5F5F0;
+  --black-color: #262626;
+}
+html.dark[data-palette="option2"] {
+  --white-color: #E5E5E0;
+  --black-color: #1C1C1A;
+}
+
+/* Option 3: Nordic Gunmetal */
+html[data-palette="option3"] {
+  --white-color: #EDF2F4;
+  --black-color: #2B2D42;
+}
+html.dark[data-palette="option3"] {
+  --white-color: #D8DBE2;
+  --black-color: #1D1E2C;
+}
+
 @layer utilities {
   @keyframes music-bar {
     0%,
