@@ -1,15 +1,68 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { PlayIcon, Setting07Icon, PauseIcon, StopIcon, ReloadIcon } from 'hugeicons-react'
+import { useState, useEffect, useRef } from 'react'
+import { PlayIcon, Setting07Icon, PauseIcon, StopIcon, ReloadIcon, ArrowExpand01Icon, ArrowShrink01Icon } from 'hugeicons-react'
+import { useMusic } from '@/context/MusicContext'
+import MiniPlayer from './MiniPlayer'
 
 export default function FocusTimer() {
 // ... (lines 7-95 unchanged, I will use a larger replacement to cover imports and the button block)
-  const [duration, setDuration] = useState(25) // minutes (kept for settings, not used for timer)
+  const { isPlaying } = useMusic()
   const [elapsedTime, setElapsedTime] = useState(0) // seconds
   const [isRunning, setIsRunning] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const [isFullScreen, setIsFullScreen] = useState(false)
+  const [showControls, setShowControls] = useState(true)
+  const [currentPalette, setCurrentPalette] = useState('default')
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const savedPalette = localStorage.getItem('palette') || 'default'
+    setCurrentPalette(savedPalette)
+    document.documentElement.setAttribute('data-palette', savedPalette)
+  }, [])
+
+  const handlePaletteChange = (palette: string) => {
+    setCurrentPalette(palette)
+    localStorage.setItem('palette', palette)
+    document.documentElement.setAttribute('data-palette', palette)
+  }
+
+  const toggleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      containerRef.current?.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable full-screen mode: ${err.message}`)
+      })
+    } else {
+      document.exitFullscreen()
+    }
+  }
+
+  useEffect(() => {
+    const handleFullScreenChange = () => {
+      setIsFullScreen(!!document.fullscreenElement)
+    }
+    document.addEventListener('fullscreenchange', handleFullScreenChange)
+    return () => document.removeEventListener('fullscreenchange', handleFullScreenChange)
+  }, [])
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isFullScreen) {
+        setShowControls(true)
+        return
+      }
+      // If mouse is in the bottom 20% of the screen
+      if (e.clientY > window.innerHeight * 0.8) {
+        setShowControls(true)
+      } else {
+        setShowControls(false)
+      }
+    }
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [isFullScreen])
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null
@@ -55,10 +108,12 @@ export default function FocusTimer() {
   }
 
   return (
-    <div className="flex flex-col items-center h-full w-full relative">
+    <div ref={containerRef} className="flex flex-col items-center h-full w-full relative bg-white dark:bg-black">
       {/* Timer Display - Occupies available space to center itself */}
-      <div className="flex-1 flex items-center justify-center z-10">
-        <span className="text-[16rem] font-sans font-bold tracking-tight leading-none text-black dark:text-white select-none">{formatTime(elapsedTime)}</span>
+      <div className="flex-1 flex items-center justify-center z-10 w-full">
+        <span className={`font-sans font-bold tracking-tight leading-none text-black dark:text-white select-none transition-all duration-500 ${isFullScreen ? 'text-[24vw]' : 'text-[16rem]'}`}>
+          {formatTime(elapsedTime)}
+        </span>
       </div>
 
       {/* Settings Modal */}
@@ -69,18 +124,40 @@ export default function FocusTimer() {
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-4xl font-black mb-8 text-black dark:text-white uppercase tracking-tight text-center">Settings</h2>
+            <div className="mb-6 p-4 border-4 border-black dark:border-white rounded-xl bg-zinc-50 dark:bg-zinc-900">
+              <p className="text-lg font-bold text-center text-zinc-600 dark:text-zinc-400">
+                Focus timer is currently set to run indefinitely.
+              </p>
+            </div>
+
             <div className="mb-8">
-              <label className="block text-lg font-black uppercase tracking-wide mb-3 text-black dark:text-white">
-                Duration (minutes)
+              <label className="block text-lg font-black uppercase tracking-wide mb-4 text-black dark:text-white text-center">
+                Color Palette
               </label>
-              <input
-                type="number"
-                value={duration}
-                onChange={(e) => setDuration(Number(e.target.value))}
-                className="w-full bg-white dark:bg-black text-black dark:text-white border-4 border-black dark:border-white rounded-lg px-4 py-3 text-2xl font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] focus:outline-none focus:translate-x-[2px] focus:translate-y-[2px] focus:shadow-none transition-all"
-                min="1"
-                max="60"
-              />
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { id: 'default', name: 'Default', colors: ['#FFFFFF', '#000000'] },
+                  { id: 'option1', name: 'Soft Slate', colors: ['#F8FAFC', '#1E293B'] },
+                  { id: 'option2', name: 'Warm', colors: ['#F5F5F0', '#262626'] },
+                  { id: 'option3', name: 'Nordic', colors: ['#EDF2F4', '#2B2D42'] },
+                ].map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => handlePaletteChange(p.id)}
+                    className={`p-2 border-2 border-black dark:border-white rounded-xl flex flex-col items-center gap-2 transition-all ${
+                      currentPalette === p.id 
+                      ? 'bg-blue-200 dark:bg-blue-800 translate-x-[2px] translate-y-[2px] shadow-none' 
+                      : 'bg-white dark:bg-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]'
+                    }`}
+                  >
+                    <div className="flex gap-1">
+                      <div className="w-4 h-4 rounded-full border border-black/20" style={{ backgroundColor: p.colors[0] }} />
+                      <div className="w-4 h-4 rounded-full border border-black/20" style={{ backgroundColor: p.colors[1] }} />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-tighter">{p.name}</span>
+                  </button>
+                ))}
+              </div>
             </div>
             <button
               onClick={() => setShowSettings(false)}
@@ -92,8 +169,12 @@ export default function FocusTimer() {
         </div>
       )}
 
-      {/* Buttons - Anchored to bottom */}
-      <div className="flex space-x-6 items-center pb-32 z-10">
+      {/* Buttons - Fixed at bottom in fullscreen, standard layout otherwise */}
+      <div 
+        className={`${isFullScreen ? 'absolute bottom-32' : 'pb-32'} flex space-x-6 items-center z-10 transition-all duration-500 ${
+          showControls ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20 pointer-events-none'
+        }`}
+      >
         {!isRunning && !isPaused ? (
           <>
             <button
@@ -111,6 +192,13 @@ export default function FocusTimer() {
             >
               <Setting07Icon size={24} className="text-black dark:text-white" />
               <span>Settings</span>
+            </button>
+            <button
+              onClick={toggleFullScreen}
+              className="group relative p-3 bg-white dark:bg-black text-black dark:text-white border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center justify-center hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+              title={isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
+            >
+              {isFullScreen ? <ArrowShrink01Icon size={24} /> : <ArrowExpand01Icon size={24} />}
             </button>
           </>
         ) : (
@@ -150,9 +238,31 @@ export default function FocusTimer() {
               <ReloadIcon size={24} className="text-black dark:text-white" />
               <span>Reset</span>
             </button>
+            <button
+              onClick={() => setShowSettings(true)}
+              className="group relative px-5 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+              title="Settings"
+            >
+              <Setting07Icon size={24} className="text-black dark:text-white" />
+              <span>Settings</span>
+            </button>
+            <button
+              onClick={toggleFullScreen}
+              className="group relative p-3 bg-white dark:bg-black text-black dark:text-white border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center justify-center hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+              title={isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
+            >
+              {isFullScreen ? <ArrowShrink01Icon size={24} /> : <ArrowExpand01Icon size={24} />}
+            </button>
           </>
         )}
       </div>
+
+      {/* Mini Player for Fullscreen */}
+      {isFullScreen && isPlaying && (
+        <div className="fixed top-8 right-8 z-50">
+          <MiniPlayer />
+        </div>
+      )}
     </div>
   )
 }
