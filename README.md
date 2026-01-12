@@ -4,7 +4,11 @@ Nagare is a minimalist productivity platform designed for focus and workflow man
 
 ## Core Features
 
-- **Flexible Focus Timer**: A clean, distraction-free timer with Indefinite Mode and immersive Full Screen support.
+- **Enhanced Focus Timer**:
+  - **Dual Modes**: Switch between **Flow Mode** (indefinite stopwatch) and **Pomodoro Mode** (structured deep work).
+  - **Customizable Pomodoro**: Adjustable durations for Focus, Short Break, and Long Break sessions.
+  - **Session Tracking**: Automatic cycle management with visual session counters.
+  - **Immersive Full Screen**: Distraction-free interface with mouse-triggered controls for maximum concentration.
 - **Kanban Task Management**: Organise workflows with persistent Todo, In Progress, and Done boards.
 - **AI-Driven Music Experience**:
   - Global playback context that continues across all tabs.

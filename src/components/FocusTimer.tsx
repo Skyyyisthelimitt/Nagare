@@ -6,7 +6,6 @@ import { useMusic } from '@/context/MusicContext'
 import MiniPlayer from './MiniPlayer'
 
 export default function FocusTimer() {
-// ... (lines 7-95 unchanged, I will use a larger replacement to cover imports and the button block)
   const { isPlaying } = useMusic()
   const [elapsedTime, setElapsedTime] = useState(0) // seconds
   const [isRunning, setIsRunning] = useState(false)
@@ -14,6 +13,13 @@ export default function FocusTimer() {
   const [showSettings, setShowSettings] = useState(false)
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [showControls, setShowControls] = useState(true)
+  const [timerMode, setTimerMode] = useState<'flow' | 'pomodoro'>('flow')
+  const [pomoMode, setPomoMode] = useState<'focus' | 'shortBreak' | 'longBreak'>('focus')
+  const [sessionCount, setSessionCount] = useState(1)
+  const [pomoTime, setPomoTime] = useState(25 * 60) // initial dummy, will be set by useEffect
+  const [focusDuration, setFocusDuration] = useState(25)
+  const [shortBreakDuration, setShortBreakDuration] = useState(5)
+  const [longBreakDuration, setLongBreakDuration] = useState(15)
   const [currentPalette, setCurrentPalette] = useState('default')
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -21,6 +27,21 @@ export default function FocusTimer() {
     const savedPalette = localStorage.getItem('palette') || 'default'
     setCurrentPalette(savedPalette)
     document.documentElement.setAttribute('data-palette', savedPalette)
+
+    const savedFocus = localStorage.getItem('focusDuration')
+    const savedShort = localStorage.getItem('shortBreakDuration')
+    const savedLong = localStorage.getItem('longBreakDuration')
+    
+    const focus = savedFocus ? parseInt(savedFocus) : 25
+    const short = savedShort ? parseInt(savedShort) : 5
+    const long = savedLong ? parseInt(savedLong) : 15
+    
+    setFocusDuration(focus)
+    setShortBreakDuration(short)
+    setLongBreakDuration(long)
+
+    // Set initial pomo time based on focus duration
+    setPomoTime(focus * 60)
   }, [])
 
   const handlePaletteChange = (palette: string) => {
@@ -68,13 +89,45 @@ export default function FocusTimer() {
     let interval: NodeJS.Timeout | null = null
     if (isRunning && !isPaused) {
       interval = setInterval(() => {
-        setElapsedTime((prev) => prev + 1)
+        if (timerMode === 'flow') {
+          setElapsedTime((prev) => prev + 1)
+        } else {
+          if (pomoTime > 0) {
+            setPomoTime((prev) => prev - 1)
+          } else {
+            // Timer Finished
+            setIsRunning(false)
+            handlePhaseComplete()
+          }
+        }
       }, 1000)
     }
     return () => {
       if (interval) clearInterval(interval)
     }
-  }, [isRunning, isPaused])
+  }, [isRunning, isPaused, timerMode, pomoTime])
+
+  const handlePhaseComplete = () => {
+    if (pomoMode === 'focus') {
+      if (sessionCount % 4 === 0) {
+        switchPomoMode('longBreak')
+      } else {
+        switchPomoMode('shortBreak')
+      }
+      setSessionCount(prev => prev + 1)
+    } else {
+      switchPomoMode('focus')
+    }
+  }
+
+  const switchPomoMode = (mode: 'focus' | 'shortBreak' | 'longBreak') => {
+    setPomoMode(mode)
+    setIsRunning(false)
+    setIsPaused(false)
+    if (mode === 'focus') setPomoTime(focusDuration * 60)
+    else if (mode === 'shortBreak') setPomoTime(shortBreakDuration * 60)
+    else if (mode === 'longBreak') setPomoTime(longBreakDuration * 60)
+  }
 
   const startTimer = () => {
     setIsRunning(true)
@@ -92,13 +145,23 @@ export default function FocusTimer() {
   const stopTimer = () => {
     setIsRunning(false)
     setIsPaused(false)
-    setElapsedTime(0)
+    if (timerMode === 'flow') {
+      setElapsedTime(0)
+    } else {
+      resetTimer()
+    }
   }
 
   const resetTimer = () => {
     setIsRunning(false)
     setIsPaused(false)
-    setElapsedTime(0)
+    if (timerMode === 'flow') {
+      setElapsedTime(0)
+    } else {
+      if (pomoMode === 'focus') setPomoTime(focusDuration * 60)
+      else if (pomoMode === 'shortBreak') setPomoTime(shortBreakDuration * 60)
+      else if (pomoMode === 'longBreak') setPomoTime(longBreakDuration * 60)
+    }
   }
 
   const formatTime = (seconds: number) => {
@@ -108,30 +171,125 @@ export default function FocusTimer() {
   }
 
   return (
-    <div ref={containerRef} className="flex flex-col items-center h-full w-full relative bg-white dark:bg-black">
+    <div ref={containerRef} className="flex flex-col items-center h-full w-full relative bg-white dark:bg-black transition-all duration-1000">
+      {/* Pomodoro Tabs */}
+      {timerMode === 'pomodoro' && (
+        <div className={`mt-8 flex gap-4 z-10 transition-all duration-500 ${isFullScreen && !showControls ? 'opacity-0 -translate-y-10' : 'opacity-100'}`}>
+          {[
+            { id: 'focus', label: 'Focus' },
+            { id: 'shortBreak', label: 'Short Break' },
+            { id: 'longBreak', label: 'Long Break' }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => switchPomoMode(tab.id as any)}
+              className={`group relative px-6 py-2 font-black uppercase tracking-tight border-4 border-black dark:border-white rounded-xl transition-all ${
+                pomoMode === tab.id
+                  ? 'bg-black dark:bg-white text-white dark:text-black translate-x-[-1px] translate-y-[-1px] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]'
+                  : 'bg-white dark:bg-black text-black dark:text-white hover:translate-y-[-1px] hover:translate-x-[-1px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Timer Display - Occupies available space to center itself */}
-      <div className="flex-1 flex items-center justify-center z-10 w-full">
+      <div className="flex-1 flex flex-col items-center justify-center z-10 w-full">
         <span className={`font-sans font-bold tracking-tight leading-none text-black dark:text-white select-none transition-all duration-500 ${isFullScreen ? 'text-[24vw]' : 'text-[16rem]'}`}>
-          {formatTime(elapsedTime)}
+          {formatTime(timerMode === 'flow' ? elapsedTime : pomoTime)}
         </span>
+        
+        {timerMode === 'pomodoro' && (
+          <div className={`mt-4 text-2xl font-black uppercase tracking-widest text-black/40 dark:text-white/40 transition-all duration-500 ${isFullScreen && !showControls ? 'opacity-0 scale-95' : 'opacity-100'}`}>
+            Session #{sessionCount}
+          </div>
+        )}
       </div>
 
       {/* Settings Modal */}
       {showSettings && (
-        <div className="fixed inset-0 bg-black/60 dark:bg-white/10 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setShowSettings(false)}>
+        <div className="fixed inset-0 bg-black/60 dark:bg-white/10 backdrop-blur-sm flex items-center justify-center z-[6000]" onClick={() => setShowSettings(false)}>
           <div 
-            className="bg-white dark:bg-black border-4 border-black dark:border-white rounded-xl p-8 max-w-sm w-full mx-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]" 
+            className="bg-white dark:bg-black border-4 border-black dark:border-white rounded-xl p-6 max-w-md w-full mx-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]" 
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="text-4xl font-black mb-8 text-black dark:text-white uppercase tracking-tight text-center">Settings</h2>
-            <div className="mb-6 p-4 border-4 border-black dark:border-white rounded-xl bg-zinc-50 dark:bg-zinc-900">
-              <p className="text-lg font-bold text-center text-zinc-600 dark:text-zinc-400">
-                Focus timer is currently set to run indefinitely.
+            <h2 className="text-3xl font-black mb-6 text-black dark:text-white uppercase tracking-tight text-center">Settings</h2>
+            
+            <div className="mb-4 space-y-3">
+              <label className="block text-base font-black uppercase tracking-wide text-black dark:text-white text-center">
+                Timer Mode
+              </label>
+              <div className="flex gap-4 p-1.5 border-4 border-black dark:border-white rounded-xl bg-zinc-50 dark:bg-zinc-900">
+                <button
+                  onClick={() => { setTimerMode('flow'); setIsRunning(false); }}
+                  className={`flex-1 py-3 font-black uppercase tracking-tight rounded-lg transition-all ${
+                    timerMode === 'flow'
+                      ? 'bg-black dark:bg-white text-white dark:text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]'
+                      : 'text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/5'
+                  }`}
+                >
+                  Flow
+                </button>
+                <button
+                  onClick={() => { setTimerMode('pomodoro'); setIsRunning(false); }}
+                  className={`flex-1 py-3 font-black uppercase tracking-tight rounded-lg transition-all ${
+                    timerMode === 'pomodoro'
+                      ? 'bg-black dark:bg-white text-white dark:text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]'
+                      : 'text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/5'
+                  }`}
+                >
+                  Pomodoro
+                </button>
+              </div>
+            </div>
+
+            <div className="mb-4 p-3 border-4 border-black dark:border-white rounded-xl bg-zinc-50 dark:bg-zinc-900">
+              <p className="text-[10px] font-bold text-center text-zinc-600 dark:text-zinc-400 uppercase tracking-widest leading-relaxed">
+                {timerMode === 'flow' 
+                  ? 'Focus timer is currently set to run indefinitely.'
+                  : 'Structured sessions with focus and break intervals.'}
               </p>
             </div>
 
-            <div className="mb-8">
-              <label className="block text-lg font-black uppercase tracking-wide mb-4 text-black dark:text-white text-center">
+            {timerMode === 'pomodoro' && (
+              <div className="mb-4 p-4 border-4 border-black dark:border-white rounded-xl bg-zinc-50 dark:bg-zinc-900">
+                <label className="block text-sm font-black uppercase tracking-wide mb-4 text-black dark:text-white text-center">
+                  Durations (Mins)
+                </label>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { label: 'Focus', value: focusDuration, setter: setFocusDuration, key: 'focusDuration' },
+                    { label: 'Short', value: shortBreakDuration, setter: setShortBreakDuration, key: 'shortBreakDuration' },
+                    { label: 'Long', value: longBreakDuration, setter: setLongBreakDuration, key: 'longBreakDuration' },
+                  ].map((d) => (
+                    <div key={d.key} className="flex flex-col gap-1.5">
+                      <span className="text-[9px] font-black uppercase text-zinc-500 dark:text-zinc-400 text-center">{d.label}</span>
+                      <input
+                        type="number"
+                        min="1"
+                        max="99"
+                        value={d.value}
+                        onChange={(e) => {
+                          const val = Math.min(99, Math.max(1, parseInt(e.target.value) || 1));
+                          d.setter(val);
+                          localStorage.setItem(d.key, val.toString());
+                          // If we are currently in this mode and not running, update the timer
+                          if (!isRunning && pomoMode === (d.label.toLowerCase() === 'short' ? 'shortBreak' : d.label.toLowerCase() === 'long' ? 'longBreak' : 'focus')) {
+                            setPomoTime(val * 60);
+                          }
+                        }}
+                        className="w-full bg-white dark:bg-black border-2 border-black dark:border-white text-black dark:text-white font-black text-center py-1.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="mb-6">
+              <label className="block text-sm font-black uppercase tracking-wide mb-3 text-black dark:text-white text-center">
                 Color Palette
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -159,6 +317,7 @@ export default function FocusTimer() {
                 ))}
               </div>
             </div>
+            
             <button
               onClick={() => setShowSettings(false)}
               className="w-full group relative px-8 py-3 bg-black dark:bg-white text-white dark:text-black font-black text-2xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"

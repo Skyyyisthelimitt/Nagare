@@ -7,6 +7,7 @@ import { motion } from 'framer-motion'
 export default function ThemeToggle() {
   const [isDark, setIsDark] = useState(false)
   const [mounted, setMounted] = useState(false)
+  // Sync with global theme system
 
   useEffect(() => {
     setMounted(true)
