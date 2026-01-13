@@ -3,23 +3,39 @@
 import { useState, useEffect, useRef } from 'react'
 import { PlayIcon, Setting07Icon, PauseIcon, StopIcon, ReloadIcon, ArrowExpand01Icon, ArrowShrink01Icon } from 'hugeicons-react'
 import { useMusic } from '@/context/MusicContext'
+import { useTimer } from '@/context/TimerContext'
 import MiniPlayer from './MiniPlayer'
 
 export default function FocusTimer() {
   const { isPlaying } = useMusic()
-  const [elapsedTime, setElapsedTime] = useState(0) // seconds
-  const [isRunning, setIsRunning] = useState(false)
-  const [isPaused, setIsPaused] = useState(false)
+  const {
+    elapsedTime,
+    isRunning,
+    isPaused,
+    timerMode,
+    pomoMode,
+    sessionCount,
+    pomoTime,
+    focusDuration,
+    shortBreakDuration,
+    longBreakDuration,
+    setTimerMode,
+    setFocusDuration,
+    setShortBreakDuration,
+    setLongBreakDuration,
+    startTimer,
+    pauseTimer,
+    resumeTimer,
+    stopTimer,
+    resetTimer,
+    switchPomoMode,
+    setIsRunning,
+    setPomoTime
+  } = useTimer()
+
   const [showSettings, setShowSettings] = useState(false)
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [showControls, setShowControls] = useState(true)
-  const [timerMode, setTimerMode] = useState<'flow' | 'pomodoro'>('flow')
-  const [pomoMode, setPomoMode] = useState<'focus' | 'shortBreak' | 'longBreak'>('focus')
-  const [sessionCount, setSessionCount] = useState(1)
-  const [pomoTime, setPomoTime] = useState(25 * 60) // initial dummy, will be set by useEffect
-  const [focusDuration, setFocusDuration] = useState(25)
-  const [shortBreakDuration, setShortBreakDuration] = useState(5)
-  const [longBreakDuration, setLongBreakDuration] = useState(15)
   const [currentPalette, setCurrentPalette] = useState('default')
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -27,21 +43,6 @@ export default function FocusTimer() {
     const savedPalette = localStorage.getItem('palette') || 'default'
     setCurrentPalette(savedPalette)
     document.documentElement.setAttribute('data-palette', savedPalette)
-
-    const savedFocus = localStorage.getItem('focusDuration')
-    const savedShort = localStorage.getItem('shortBreakDuration')
-    const savedLong = localStorage.getItem('longBreakDuration')
-    
-    const focus = savedFocus ? parseInt(savedFocus) : 25
-    const short = savedShort ? parseInt(savedShort) : 5
-    const long = savedLong ? parseInt(savedLong) : 15
-    
-    setFocusDuration(focus)
-    setShortBreakDuration(short)
-    setLongBreakDuration(long)
-
-    // Set initial pomo time based on focus duration
-    setPomoTime(focus * 60)
   }, [])
 
   const handlePaletteChange = (palette: string) => {
@@ -84,85 +85,6 @@ export default function FocusTimer() {
     window.addEventListener('mousemove', handleMouseMove)
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [isFullScreen])
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null
-    if (isRunning && !isPaused) {
-      interval = setInterval(() => {
-        if (timerMode === 'flow') {
-          setElapsedTime((prev) => prev + 1)
-        } else {
-          if (pomoTime > 0) {
-            setPomoTime((prev) => prev - 1)
-          } else {
-            // Timer Finished
-            setIsRunning(false)
-            handlePhaseComplete()
-          }
-        }
-      }, 1000)
-    }
-    return () => {
-      if (interval) clearInterval(interval)
-    }
-  }, [isRunning, isPaused, timerMode, pomoTime])
-
-  const handlePhaseComplete = () => {
-    if (pomoMode === 'focus') {
-      if (sessionCount % 4 === 0) {
-        switchPomoMode('longBreak')
-      } else {
-        switchPomoMode('shortBreak')
-      }
-      setSessionCount(prev => prev + 1)
-    } else {
-      switchPomoMode('focus')
-    }
-  }
-
-  const switchPomoMode = (mode: 'focus' | 'shortBreak' | 'longBreak') => {
-    setPomoMode(mode)
-    setIsRunning(false)
-    setIsPaused(false)
-    if (mode === 'focus') setPomoTime(focusDuration * 60)
-    else if (mode === 'shortBreak') setPomoTime(shortBreakDuration * 60)
-    else if (mode === 'longBreak') setPomoTime(longBreakDuration * 60)
-  }
-
-  const startTimer = () => {
-    setIsRunning(true)
-    setIsPaused(false)
-  }
-
-  const pauseTimer = () => {
-    setIsPaused(true)
-  }
-
-  const resumeTimer = () => {
-    setIsPaused(false)
-  }
-
-  const stopTimer = () => {
-    setIsRunning(false)
-    setIsPaused(false)
-    if (timerMode === 'flow') {
-      setElapsedTime(0)
-    } else {
-      resetTimer()
-    }
-  }
-
-  const resetTimer = () => {
-    setIsRunning(false)
-    setIsPaused(false)
-    if (timerMode === 'flow') {
-      setElapsedTime(0)
-    } else {
-      if (pomoMode === 'focus') setPomoTime(focusDuration * 60)
-      else if (pomoMode === 'shortBreak') setPomoTime(shortBreakDuration * 60)
-      else if (pomoMode === 'longBreak') setPomoTime(longBreakDuration * 60)
-    }
-  }
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)

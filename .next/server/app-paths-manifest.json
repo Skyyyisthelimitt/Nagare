@@ -1,3 +1,6 @@
 {
+  "/api/ai/analyze/route": "app/api/ai/analyze/route.js",
+  "/api/music/search/route": "app/api/music/search/route.js",
+  "/icon.png/route": "app/icon.png/route.js",
   "/page": "app/page.js"
 }
