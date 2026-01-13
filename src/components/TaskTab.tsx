@@ -26,10 +26,11 @@ const isOverdue = (date: Date | null) => {
 }
 
 export default function TaskTab() {
-  const { tasks, addTask: saveTask, moveTask, deleteTask } = useTasks()
+  const { tasks, addTask: saveTask, updateTask, moveTask, deleteTask } = useTasks()
   const [draggedTask, setDraggedTask] = useState<Task | null>(null)
   const [showAddTask, setShowAddTask] = useState(false)
   const [selectedColumn, setSelectedColumn] = useState<TaskStatus | null>(null)
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null)
   const [newTask, setNewTask] = useState({
     title: '',
     note: '',
@@ -55,16 +56,28 @@ export default function TaskTab() {
 
     const finalStatus = selectedColumn || status
     
-    saveTask({
-      title: newTask.title,
-      note: newTask.note,
-      status: finalStatus,
-      priority: newTask.priority,
-      tags: newTask.tags,
-      date: newTask.date,
-    })
+    if (editingTaskId) {
+      updateTask(editingTaskId, {
+        title: newTask.title,
+        note: newTask.note,
+        status: finalStatus,
+        priority: newTask.priority,
+        tags: newTask.tags,
+        date: newTask.date,
+      })
+    } else {
+      saveTask({
+        title: newTask.title,
+        note: newTask.note,
+        status: finalStatus,
+        priority: newTask.priority,
+        tags: newTask.tags,
+        date: newTask.date,
+      })
+    }
 
     setNewTask({ title: '', note: '', priority: 'medium', tags: [], date: null })
+    setEditingTaskId(null)
     setTagInput('')
     setShowAddTask(false)
     setSelectedColumn(null)
@@ -151,7 +164,19 @@ export default function TaskTab() {
       <div
         draggable
         onDragStart={(e) => handleDragStart(e, task)}
-        className="bg-white dark:bg-neutral-900 rounded-lg p-4 mb-4 cursor-move transition-all border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] group"
+        onClick={() => {
+          setEditingTaskId(task.id)
+          setNewTask({
+            title: task.title,
+            note: task.note,
+            priority: task.priority,
+            tags: task.tags,
+            date: task.date,
+          })
+          setSelectedColumn(task.status)
+          setShowAddTask(true)
+        }}
+        className="bg-white dark:bg-neutral-900 rounded-lg p-4 mb-4 cursor-pointer transition-all border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] group"
       >
         <div className="flex items-start justify-between mb-2">
           <h3 className="font-bold text-black dark:text-white flex-1 font-sans text-base">
@@ -249,6 +274,8 @@ export default function TaskTab() {
                     <button
                       onClick={() => {
                         setSelectedColumn(column.id)
+                        setEditingTaskId(null)
+                        setNewTask({ title: '', note: '', priority: 'medium', tags: [], date: null })
                         setShowAddTask(true)
                       }}
                       className="w-8 h-8 flex items-center justify-center bg-white dark:bg-black text-black dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-lg border-2 border-black dark:border-white transition-transform hover:scale-105 active:scale-95"
@@ -266,6 +293,8 @@ export default function TaskTab() {
                   onDrop={(e) => handleDrop(e, column.id)}
                   onDoubleClick={() => {
                     setSelectedColumn(column.id)
+                    setEditingTaskId(null)
+                    setNewTask({ title: '', note: '', priority: 'medium', tags: [], date: null })
                     setShowAddTask(true)
                   }}
                 >
@@ -278,6 +307,8 @@ export default function TaskTab() {
                         <button 
                           onClick={() => {
                             setSelectedColumn(column.id)
+                            setEditingTaskId(null)
+                            setNewTask({ title: '', note: '', priority: 'medium', tags: [], date: null })
                             setShowAddTask(true)
                           }}
                           className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider hover:text-black dark:hover:text-white transition-colors"
@@ -335,8 +366,17 @@ export default function TaskTab() {
                 onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-2xl font-black text-black dark:text-white font-sans uppercase">Add New Task</h3>
-                <button onClick={() => setShowAddTask(false)} className="text-black dark:text-white hover:rotate-90 transition-transform">
+                <h3 className="text-2xl font-black text-black dark:text-white font-sans uppercase">
+                  {editingTaskId ? 'Edit Task' : 'Add New Task'}
+                </h3>
+                <button 
+                  onClick={() => {
+                    setShowAddTask(false)
+                    setEditingTaskId(null)
+                    setNewTask({ title: '', note: '', priority: 'medium', tags: [], date: null })
+                  }} 
+                  className="text-black dark:text-white hover:rotate-90 transition-transform"
+                >
                    <IconX className="w-8 h-8 stroke-[3]" />
                 </button>
               </div>
@@ -449,6 +489,7 @@ export default function TaskTab() {
                  <button
                   onClick={() => {
                     setShowAddTask(false)
+                    setEditingTaskId(null)
                     setNewTask({ title: '', note: '', priority: 'medium', tags: [], date: null })
                     setTagInput('')
                   }}
@@ -463,7 +504,7 @@ export default function TaskTab() {
                     }}
                     className="flex-1 bg-black dark:bg-white text-white dark:text-black border-2 border-black dark:border-white hover:bg-neutral-800 dark:hover:bg-neutral-200 px-4 py-3 rounded-xl font-black text-lg uppercase tracking-wider transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.5)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.5)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.5)]"
                 >
-                  Create Task
+                  {editingTaskId ? 'Save Changes' : 'Create Task'}
                 </button>
               </div>
             </div>

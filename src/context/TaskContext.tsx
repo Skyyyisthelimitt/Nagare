@@ -19,6 +19,7 @@ interface TaskContextType {
   tasks: Task[]
   setTasks: React.Dispatch<React.SetStateAction<Task[]>>
   addTask: (task: Omit<Task, 'id'>) => void
+  updateTask: (taskId: string, updates: Partial<Omit<Task, 'id'>>) => void
   moveTask: (taskId: string, newStatus: TaskStatus) => void
   deleteTask: (taskId: string) => void
 }
@@ -59,6 +60,12 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     setTasks(prev => [...prev, newTask])
   }
 
+  const updateTask = (taskId: string, updates: Partial<Omit<Task, 'id'>>) => {
+    setTasks(prev => prev.map(task => 
+      task.id === taskId ? { ...task, ...updates } : task
+    ))
+  }
+
   const moveTask = (taskId: string, newStatus: TaskStatus) => {
     setTasks(prev => prev.map(task => 
       task.id === taskId ? { ...task, status: newStatus } : task
@@ -70,7 +77,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <TaskContext.Provider value={{ tasks, setTasks, addTask, moveTask, deleteTask }}>
+    <TaskContext.Provider value={{ tasks, setTasks, addTask, updateTask, moveTask, deleteTask }}>
       {children}
     </TaskContext.Provider>
   )

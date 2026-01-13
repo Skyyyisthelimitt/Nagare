@@ -833,6 +833,9 @@ video {
 .left-1\/2 {
   left: 50%;
 }
+.left-8 {
+  left: 2rem;
+}
 .right-0 {
   right: 0px;
 }
@@ -841,9 +844,6 @@ video {
 }
 .top-8 {
   top: 2rem;
-}
-.left-8 {
-  left: 2rem;
 }
 .z-10 {
   z-index: 10;
@@ -1131,9 +1131,6 @@ video {
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
-.cursor-move {
-  cursor: move;
-}
 .cursor-pointer {
   cursor: pointer;
 }
@@ -1307,9 +1304,6 @@ video {
 }
 .border-l-2 {
   border-left-width: 2px;
-}
-.border-r-2 {
-  border-right-width: 2px;
 }
 .border-t-2 {
   border-top-width: 2px;
@@ -1503,17 +1497,11 @@ video {
 .pl-3 {
   padding-left: 0.75rem;
 }
-.pr-4 {
-  padding-right: 1rem;
-}
 .pt-28 {
   padding-top: 7rem;
 }
 .pt-4 {
   padding-top: 1rem;
-}
-.pr-1 {
-  padding-right: 0.25rem;
 }
 .text-center {
   text-align: center;
@@ -1607,6 +1595,10 @@ video {
 .text-black {
   color: var(--black-color);
 }
+.text-blue-600 {
+  --tw-text-opacity: 1;
+  color: rgb(37 99 235 / var(--tw-text-opacity, 1));
+}
 .text-green-600 {
   --tw-text-opacity: 1;
   color: rgb(22 163 74 / var(--tw-text-opacity, 1));
@@ -1657,14 +1649,6 @@ video {
 .text-zinc-600 {
   --tw-text-opacity: 1;
   color: rgb(82 82 91 / var(--tw-text-opacity, 1));
-}
-.text-orange-500 {
-  --tw-text-opacity: 1;
-  color: rgb(249 115 22 / var(--tw-text-opacity, 1));
-}
-.text-blue-600 {
-  --tw-text-opacity: 1;
-  color: rgb(37 99 235 / var(--tw-text-opacity, 1));
 }
 .placeholder-neutral-500::-moz-placeholder {
   --tw-placeholder-opacity: 1;
@@ -2185,6 +2169,11 @@ html.dark[data-palette="option3"] {
   color: var(--black-color);
 }
 
+.dark\:text-blue-400:is(.dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(96 165 250 / var(--tw-text-opacity, 1));
+}
+
 .dark\:text-green-400:is(.dark *) {
   --tw-text-opacity: 1;
   color: rgb(74 222 128 / var(--tw-text-opacity, 1));
@@ -2227,11 +2216,6 @@ html.dark[data-palette="option3"] {
 .dark\:text-zinc-400:is(.dark *) {
   --tw-text-opacity: 1;
   color: rgb(161 161 170 / var(--tw-text-opacity, 1));
-}
-
-.dark\:text-blue-400:is(.dark *) {
-  --tw-text-opacity: 1;
-  color: rgb(96 165 250 / var(--tw-text-opacity, 1));
 }
 
 .dark\:accent-white:is(.dark *) {
