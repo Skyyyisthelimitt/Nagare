@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { IconCalendar, IconX, IconPlus, IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 import { Task01Icon, Loading01Icon, Tick03Icon } from 'hugeicons-react'
 
@@ -46,6 +46,28 @@ export default function TaskTab() {
     'done': 1
   })
   const ITEMS_PER_PAGE = 4
+  
+  // Keep pagination in bounds when tasks change
+  useEffect(() => {
+    setColumnPages(prev => {
+      const statuses: TaskStatus[] = ['planned', 'in-progress', 'done'];
+      const newPages = { ...prev };
+      let changed = false;
+
+      statuses.forEach(status => {
+        const columnTasks = tasks.filter(t => t.status === status);
+        const totalCount = columnTasks.length;
+        const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE) || 1;
+        
+        if (prev[status] > totalPages) {
+          newPages[status] = totalPages;
+          changed = true;
+        }
+      });
+
+      return changed ? newPages : prev;
+    });
+  }, [tasks]);
 
   const setPage = (columnId: TaskStatus, newPage: number) => {
     setColumnPages(prev => ({ ...prev, [columnId]: newPage }))
@@ -247,8 +269,8 @@ export default function TaskTab() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {columns.map((column) => {
             const columnTasks = tasks.filter(task => task.status === column.id)
-            const currentPage = columnPages[column.id]
             const totalPages = Math.ceil(columnTasks.length / ITEMS_PER_PAGE)
+            const currentPage = Math.min(columnPages[column.id], totalPages || 1)
             const paginatedTasks = columnTasks.slice(
               (currentPage - 1) * ITEMS_PER_PAGE, 
               currentPage * ITEMS_PER_PAGE
