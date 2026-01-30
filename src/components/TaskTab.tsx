@@ -198,75 +198,94 @@ export default function TaskTab() {
           setSelectedColumn(task.status)
           setShowAddTask(true)
         }}
-        className="bg-white dark:bg-neutral-900 rounded-lg p-4 mb-4 cursor-pointer transition-all border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] group"
+        className="bg-white dark:bg-neutral-900 rounded-lg p-3 md:p-4 mb-3 md:mb-4 cursor-pointer transition-all border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] group relative min-h-[80px] md:min-h-0"
       >
-        <div className="flex items-start justify-between mb-2">
-          <h3 className="font-bold text-black dark:text-white flex-1 font-sans text-base">
-            {task.title}
-          </h3>
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              deleteTask(task.id)
-            }}
-            className="text-black dark:text-white hover:text-red-500 dark:hover:text-red-400 transition-colors ml-2 opacity-0 group-hover:opacity-100"
-          >
-            <IconX className="h-5 w-5 stroke-2" />
-          </button>
-        </div>
-        
-        {task.note && (
-          <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-3 font-sans font-medium">
-            {task.note}
-          </p>
-        )}
+        {/* Delete Button - Better positioned for desktop too */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            deleteTask(task.id)
+          }}
+          className="absolute -top-2 -right-2 bg-white dark:bg-black border-2 border-black dark:border-white rounded-full p-1 text-black dark:text-white hover:bg-red-500 hover:text-white dark:hover:bg-red-500 transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 z-10 shadow-sm"
+          title="Delete"
+        >
+          <IconX className="h-3 w-3 md:h-4 md:w-4 stroke-[3]" />
+        </button>
 
-        {/* Date, Priority and Tags */}
-        <div className="flex items-center gap-3 mb-2 flex-wrap">
-          {task.date && (
-            <div className="flex items-center gap-1 border border-black dark:border-white px-1.5 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800">
-              <IconCalendar className="h-3 w-3 text-black dark:text-white" />
-              <span className={`text-xs font-bold font-sans ${overdue ? 'text-red-600 dark:text-red-400' : 'text-neutral-700 dark:text-neutral-300'}`}>
-                {formatDate(task.date)}
-              </span>
-            </div>
-          )}
-          
-          {/* Priority badge with emoji */}
-          {task.priority && (
-            <div className={`inline-flex items-center gap-0.5 px-2 py-0.5 border rounded-md bg-neutral-100 dark:bg-neutral-800 ${getPriorityBorder(task.priority)}`}>
-              <span className="text-sm leading-none flex items-center justify-center">
-                 {getPriorityEmoji(task.priority)}
-              </span>
-              <span className={`text-xs font-black font-sans uppercase ${getPriorityColor(task.priority)}`}>
-                {task.priority}
-              </span>
-            </div>
-          )}
-        </div>
+        <div className="flex flex-row md:flex-col gap-4 md:gap-3 justify-between md:justify-start items-start md:items-stretch h-full">
+          {/* Left Side (Mobile) / Top Side (Desktop) */}
+          <div className="flex-1 min-w-0 flex flex-col justify-center md:justify-start gap-1">
+            <h3 className="font-bold text-black dark:text-white font-sans text-sm md:text-base leading-tight break-words pr-2">
+              {task.title}
+            </h3>
+            
+            {task.note && (
+              <p className="text-xs md:text-sm text-neutral-600 dark:text-neutral-400 font-sans font-medium line-clamp-2 leading-relaxed">
+                {task.note}
+              </p>
+            )}
 
-        {/* Tags */}
-        {task.tags.length > 0 && (
-          <div className="flex flex-wrap items-center gap-1.5">
-            {task.tags.map((tag, idx) => (
-              <span
-                key={idx}
-                className="px-2 py-0.5 text-xs font-bold bg-white dark:bg-black text-black dark:text-white border border-black dark:border-white rounded-md shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
-              >
-                #{tag}
-              </span>
-            ))}
+            {/* Tags - Move below note on both, but keep styling compact on mobile */}
+            {task.tags.length > 0 && (
+              <div className="hidden md:flex flex-wrap items-center gap-1.5 mt-2">
+                {task.tags.map((tag, idx) => (
+                  <span
+                    key={idx}
+                    className="px-2 py-0.5 text-xs font-bold bg-white dark:bg-black text-black dark:text-white border border-black dark:border-white rounded-md shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
+            
+            {/* Mobile-only Tags (inside the left block) */}
+            {task.tags.length > 0 && (
+              <div className="flex md:hidden flex-wrap items-center gap-1.5 mt-1">
+                {task.tags.map((tag, idx) => (
+                  <span
+                    key={idx}
+                    className="px-1.5 py-0.5 text-[10px] font-bold bg-white dark:bg-black text-black dark:text-white border border-black dark:border-white rounded shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] dark:shadow-[1px_1px_0px_0px_rgba(255,255,255,1)]"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
-        )}
+
+          {/* Right Side (Mobile) / Bottom Attributes (Desktop) */}
+          <div className="flex flex-col md:flex-row items-end md:items-center gap-2 md:gap-3 shrink-0 pt-0.5 md:pt-0">
+            {task.date && (
+              <div className="flex items-center gap-1 border border-black dark:border-white px-1.5 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800">
+                <IconCalendar className="h-3 w-3 text-black dark:text-white" />
+                <span className={`text-[9px] md:text-xs font-bold font-sans ${overdue ? 'text-red-600 dark:text-red-400' : 'text-neutral-700 dark:text-neutral-300'}`}>
+                  {formatDate(task.date)}
+                </span>
+              </div>
+            )}
+            
+            {task.priority && (
+              <div className={`inline-flex items-center gap-1 px-1.5 py-0.5 border rounded-md bg-neutral-100 dark:bg-neutral-800 ${getPriorityBorder(task.priority)}`}>
+                <span className="text-xs md:text-sm leading-none flex items-center justify-center">
+                  {getPriorityEmoji(task.priority)}
+                </span>
+                <span className={`text-[9px] md:text-xs font-black font-sans uppercase ${getPriorityColor(task.priority)}`}>
+                  {task.priority}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col items-center w-full max-w-7xl mx-auto py-8 px-4 pb-24">
+    <div className="flex flex-col items-center w-full max-w-7xl mx-auto py-4 md:py-8 px-4 pb-24">
       <div className="w-full">
         {/* Kanban Board */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {columns.map((column) => {
             const columnTasks = tasks.filter(task => task.status === column.id)
             const totalPages = Math.ceil(columnTasks.length / ITEMS_PER_PAGE)
@@ -310,7 +329,7 @@ export default function TaskTab() {
                   </div>
                 </div>
                 <div 
-                  className="bg-neutral-50 dark:bg-neutral-900/50 p-4 min-h-[600px] flex flex-col"
+                  className="bg-neutral-50 dark:bg-neutral-900/50 p-4 min-h-[300px] md:min-h-[600px] flex flex-col"
                   onDragOver={handleDragOver}
                   onDrop={(e) => handleDrop(e, column.id)}
                   onDoubleClick={() => {

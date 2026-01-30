@@ -92,11 +92,17 @@ export default function FocusTimer() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
   }
 
+  const handleToggleControls = () => {
+    if (isFullScreen) {
+      setShowControls(prev => !prev)
+    }
+  }
+
   return (
-    <div ref={containerRef} className="flex flex-col items-center h-full w-full relative bg-white dark:bg-black transition-all duration-1000">
+    <div ref={containerRef} onClick={handleToggleControls} className="flex flex-col items-center h-full w-full relative bg-white dark:bg-black transition-all duration-1000">
       {/* Pomodoro Tabs */}
       {timerMode === 'pomodoro' && (
-        <div className={`mt-8 flex gap-4 z-10 transition-all duration-500 ${isFullScreen && !showControls ? 'opacity-0 -translate-y-10' : 'opacity-100'}`}>
+        <div className={`mt-4 md:mt-8 flex gap-2 md:gap-4 z-10 transition-all duration-500 flex-wrap justify-center ${isFullScreen && !showControls ? 'opacity-0 -translate-y-10' : 'opacity-100'}`}>
           {[
             { id: 'focus', label: 'Focus' },
             { id: 'shortBreak', label: 'Short Break' },
@@ -105,7 +111,7 @@ export default function FocusTimer() {
             <button
               key={tab.id}
               onClick={() => switchPomoMode(tab.id as any)}
-              className={`group relative px-6 py-2 font-black uppercase tracking-tight border-4 border-black dark:border-white rounded-xl transition-all ${
+              className={`group relative px-4 py-1.5 md:px-6 md:py-2 font-black uppercase tracking-tight border-4 border-black dark:border-white rounded-xl transition-all text-xs md:text-base whitespace-nowrap ${
                 pomoMode === tab.id
                   ? 'bg-black dark:bg-white text-white dark:text-black translate-x-[-1px] translate-y-[-1px] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]'
                   : 'bg-white dark:bg-black text-black dark:text-white hover:translate-y-[-1px] hover:translate-x-[-1px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]'
@@ -118,8 +124,8 @@ export default function FocusTimer() {
       )}
 
       {/* Timer Display - Occupies available space to center itself */}
-      <div className="flex-1 flex flex-col items-center justify-center z-10 w-full">
-        <span className={`font-sans font-bold tracking-tight leading-none text-black dark:text-white select-none transition-all duration-500 ${isFullScreen ? 'text-[24vw]' : 'text-[16rem]'}`}>
+      <div className={`flex-1 flex flex-col items-center z-10 w-full px-4 md:pt-0 pb-32 md:pb-0 ${isFullScreen ? 'justify-center pt-0' : 'justify-start pt-24'} md:justify-center`}>
+        <span className={`font-sans font-bold tracking-tight leading-none text-black dark:text-white select-none transition-all duration-500 ${isFullScreen ? 'text-[24vw]' : 'text-[22vw] md:text-[16rem]'}`}>
           {formatTime(timerMode === 'flow' ? elapsedTime : pomoTime)}
         </span>
         
@@ -252,34 +258,38 @@ export default function FocusTimer() {
 
       {/* Buttons - Fixed at bottom in fullscreen, standard layout otherwise */}
       <div 
-        className={`${isFullScreen ? 'absolute bottom-32' : 'pb-32'} flex space-x-6 items-center z-10 transition-all duration-500 ${
-          showControls ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20 pointer-events-none'
+        onClick={(e) => e.stopPropagation()}
+        className={`${isFullScreen ? 'absolute bottom-12 md:bottom-32 left-0 right-0 max-w-[240px] md:max-w-none mx-auto' : 'absolute bottom-0 md:bottom-auto md:static md:pb-32 left-0 right-0 max-w-[240px] md:max-w-none mx-auto'} flex flex-col md:flex-row flex-wrap justify-center gap-3 md:gap-6 items-center z-10 transition-all duration-500 px-4 w-full md:w-auto ${
+          showControls ? 'opacity-100' : 'opacity-0 translate-y-20 pointer-events-none'
         }`}
       >
         {!isRunning && !isPaused ? (
           <>
-            <button
+             <button
               onClick={startTimer}
-              className="group relative px-5 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+              className="w-full md:w-auto group relative px-8 py-2 md:px-5 md:py-3 bg-white dark:bg-black text-black dark:text-white font-black text-lg md:text-xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center justify-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
               title="Start"
             >
-              <PlayIcon size={24} className="text-black dark:text-white fill-current" />
+              <PlayIcon size={24} className="text-black dark:text-white fill-current md:w-6 md:h-6 w-5 h-5" />
               <span>Start</span>
             </button>
             <button
               onClick={() => setShowSettings(true)}
-              className="group relative px-5 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+              className="w-full md:w-auto group relative px-8 py-2 md:px-5 md:py-3 bg-white dark:bg-black text-black dark:text-white font-black text-lg md:text-xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center justify-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
               title="Settings"
             >
-              <Setting07Icon size={24} className="text-black dark:text-white" />
+              <Setting07Icon size={24} className="text-black dark:text-white md:w-6 md:h-6 w-5 h-5" />
               <span>Settings</span>
             </button>
             <button
               onClick={toggleFullScreen}
-              className="group relative p-3 bg-white dark:bg-black text-black dark:text-white border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center justify-center hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+              className="w-full md:w-auto md:aspect-square group relative px-8 py-2 md:p-3 bg-white dark:bg-black text-black dark:text-white border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center justify-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
               title={isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
             >
-              {isFullScreen ? <ArrowShrink01Icon size={24} /> : <ArrowExpand01Icon size={24} />}
+              {isFullScreen ? <ArrowShrink01Icon size={24} className="md:w-6 md:h-6 w-5 h-5" /> : <ArrowExpand01Icon size={24} className="md:w-6 md:h-6 w-5 h-5" />}
+              <span className="md:hidden font-black uppercase text-lg tracking-wider whitespace-nowrap">
+                   {isFullScreen ? "Exit Full Screen" : "Full Screen"}
+              </span>
             </button>
           </>
         ) : (
@@ -287,52 +297,55 @@ export default function FocusTimer() {
             {isPaused ? (
               <button
                 onClick={resumeTimer}
-                className="group relative px-5 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+                className="w-full md:w-auto group relative px-8 py-2 md:px-5 md:py-3 bg-white dark:bg-black text-black dark:text-white font-black text-lg md:text-xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center justify-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
                 title="Resume"
               >
-                <PlayIcon size={24} className="text-black dark:text-white fill-current" />
+                <PlayIcon size={24} className="text-black dark:text-white fill-current md:w-6 md:h-6 w-5 h-5" />
                 <span>Resume</span>
               </button>
             ) : (
               <button
                 onClick={pauseTimer}
-                className="group relative px-5 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+                className="w-full md:w-auto group relative px-8 py-2 md:px-5 md:py-3 bg-white dark:bg-black text-black dark:text-white font-black text-lg md:text-xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center justify-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
                 title="Pause"
               >
-                <PauseIcon size={24} className="text-black dark:text-white fill-current" />
+                <PauseIcon size={24} className="text-black dark:text-white fill-current md:w-6 md:h-6 w-5 h-5" />
                 <span>Pause</span>
               </button>
             )}
             <button
               onClick={stopTimer}
-              className="group relative px-5 py-3 bg-red-500 text-white font-black text-xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+              className="w-full md:w-auto group relative px-8 py-2 md:px-5 md:py-3 bg-red-500 text-white font-black text-lg md:text-xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center justify-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
               title="Stop"
             >
-              <StopIcon size={24} className="text-white fill-current" />
+              <StopIcon size={24} className="text-white fill-current md:w-6 md:h-6 w-5 h-5" />
               <span>Stop</span>
             </button>
             <button
               onClick={resetTimer}
-              className="group relative px-5 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+              className="w-full md:w-auto group relative px-8 py-2 md:px-5 md:py-3 bg-white dark:bg-black text-black dark:text-white font-black text-lg md:text-xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center justify-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
               title="Reset"
             >
-              <ReloadIcon size={24} className="text-black dark:text-white" />
+              <ReloadIcon size={24} className="text-black dark:text-white md:w-6 md:h-6 w-5 h-5" />
               <span>Reset</span>
             </button>
             <button
               onClick={() => setShowSettings(true)}
-              className="group relative px-5 py-3 bg-white dark:bg-black text-black dark:text-white font-black text-xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+              className="w-full md:w-auto group relative px-8 py-2 md:px-5 md:py-3 bg-white dark:bg-black text-black dark:text-white font-black text-lg md:text-xl uppercase tracking-wider border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center justify-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
               title="Settings"
             >
-              <Setting07Icon size={24} className="text-black dark:text-white" />
+              <Setting07Icon size={24} className="text-black dark:text-white md:w-6 md:h-6 w-5 h-5" />
               <span>Settings</span>
             </button>
             <button
               onClick={toggleFullScreen}
-              className="group relative p-3 bg-white dark:bg-black text-black dark:text-white border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center justify-center hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+              className="w-full md:w-auto md:aspect-square group relative px-8 py-2 md:p-3 bg-white dark:bg-black text-black dark:text-white border-4 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center justify-center gap-3 hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
               title={isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
             >
-              {isFullScreen ? <ArrowShrink01Icon size={24} /> : <ArrowExpand01Icon size={24} />}
+              {isFullScreen ? <ArrowShrink01Icon size={24} className="md:w-6 md:h-6 w-5 h-5" /> : <ArrowExpand01Icon size={24} className="md:w-6 md:h-6 w-5 h-5" />}
+              <span className="md:hidden font-black uppercase text-lg tracking-wider whitespace-nowrap">
+                   {isFullScreen ? "Exit Full Screen" : "Full Screen"}
+              </span>
             </button>
           </>
         )}

@@ -84,16 +84,23 @@ export default function MoodChat({ onMusicRequest, isMinimized, onToggleMinimize
     return (
       <button
         onClick={onToggleMinimize}
-        className="h-full w-full bg-blue-200 dark:bg-blue-800 border-4 border-black dark:border-white rounded-2xl shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] flex flex-col items-center justify-center gap-4 py-8 transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[14px_14px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[14px_14px_0px_0px_rgba(255,255,255,1)] active:translate-x-0 active:translate-y-0 active:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:active:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] cursor-pointer group"
+        className="h-full w-full bg-blue-200 dark:bg-blue-800 border-4 border-black dark:border-white rounded-2xl shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] flex flex-row md:flex-col items-center justify-between md:justify-center px-6 md:px-0 gap-4 py-2 md:py-8 transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[14px_14px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[14px_14px_0px_0px_rgba(255,255,255,1)] active:translate-x-0 active:translate-y-0 active:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:active:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] cursor-pointer group"
         title="Expand Mood Chat"
       >
-        {/* Icon at top with styled container */}
-        <div className="w-12 h-12 flex items-center justify-center bg-white dark:bg-blue-800 border-2 border-black dark:border-white rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
-          <Message01Icon size={24} className="text-black dark:text-white" />
+        <div className="flex items-center gap-4">
+            {/* Icon at top with styled container */}
+            <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-white dark:bg-blue-800 border-2 border-black dark:border-white rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+            <Message01Icon size={24} className="text-black dark:text-white" />
+            </div>
+            
+            {/* Mobile Text */}
+            <span className="md:hidden text-lg font-black text-black dark:text-white uppercase tracking-widest">
+                Mood Chat
+            </span>
         </div>
         
-        {/* Vertical MOOD CHAT text */}
-        <div className="flex flex-col items-center gap-1">
+        {/* Vertical MOOD CHAT text - Desktop Only */}
+        <div className="hidden md:flex flex-col items-center gap-1">
           <span className="text-3xl font-black text-black dark:text-white">M</span>
           <span className="text-3xl font-black text-black dark:text-white">O</span>
           <span className="text-3xl font-black text-black dark:text-white">O</span>
@@ -104,19 +111,31 @@ export default function MoodChat({ onMusicRequest, isMinimized, onToggleMinimize
           <span className="text-3xl font-black text-black dark:text-white">A</span>
           <span className="text-3xl font-black text-black dark:text-white">T</span>
         </div>
+
+        {/* Mobile Expand Icon */}
+        <div className="md:hidden">
+             <svg 
+                className="w-6 h-6 text-black dark:text-white animate-pulse" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+            >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+            </svg>
+        </div>
       </button>
     )
   }
 
   return (
-    <div className="relative flex flex-col h-full bg-white dark:bg-black border-4 border-black dark:border-white rounded-2xl shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] overflow-hidden">
+    <div className="relative flex flex-col h-full bg-white dark:bg-black border-4 border-black dark:border-white rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] md:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] md:dark:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] overflow-hidden">
       {/* Header design like Task Tab */}
-      <div className="bg-white dark:bg-black px-4 py-4 border-b-4 border-black dark:border-white flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 flex items-center justify-center bg-blue-200 dark:bg-blue-800 border-2 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-            <Message01Icon size={28} className="text-black dark:text-white" />
+      <div className="bg-white dark:bg-black px-4 py-3 md:py-4 border-b-4 border-black dark:border-white flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-3 md:gap-4">
+          <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-blue-200 dark:bg-blue-800 border-2 border-black dark:border-white rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] md:dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+            <Message01Icon size={24} className="text-black dark:text-white md:size-[28px]" />
           </div>
-          <h3 className="font-black text-xl text-black dark:text-white uppercase tracking-tight">
+          <h3 className="font-black text-lg md:text-xl text-black dark:text-white uppercase tracking-tight">
             Mood Chat
           </h3>
         </div>
@@ -137,14 +156,14 @@ export default function MoodChat({ onMusicRequest, isMinimized, onToggleMinimize
       </div>
 
       {/* Messages area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide">
+      <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 md:space-y-6 scrollbar-hide">
         {messages.map((msg, idx) => (
           <div
             key={idx}
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[85%] px-4 py-3 border-2 border-black dark:border-white font-medium shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] ${
+              className={`max-w-[85%] px-3 md:px-4 py-2 md:py-3 border-2 border-black dark:border-white font-medium shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] md:dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] text-sm md:text-base ${
                 msg.role === 'user'
                   ? 'bg-blue-200 dark:bg-blue-900 text-black dark:text-white rounded-t-2xl rounded-bl-2xl'
                   : 'bg-white dark:bg-zinc-900 text-black dark:text-white rounded-t-2xl rounded-br-2xl'
@@ -157,12 +176,12 @@ export default function MoodChat({ onMusicRequest, isMinimized, onToggleMinimize
         
         {/* Quick Action Buttons */}
         {messages.length === 1 && !isTyping && (
-          <div className="flex flex-wrap gap-2 justify-center pt-4">
+          <div className="flex flex-wrap gap-2 justify-center pt-2 md:pt-4">
             {quickActions.map((action, idx) => (
               <button
                 key={idx}
                 onClick={() => handleQuickAction(action.message)}
-                className="px-4 py-2 bg-zinc-100 dark:bg-zinc-900 border-2 border-black dark:border-white rounded-lg font-bold text-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all active:translate-x-0 active:translate-y-0 active:shadow-none"
+                className="px-3 py-1.5 md:px-4 md:py-2 bg-zinc-100 dark:bg-zinc-900 border-2 border-black dark:border-white rounded-lg font-bold text-xs md:text-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] md:dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all active:translate-x-0 active:translate-y-0 active:shadow-none"
               >
                 {action.label}
               </button>
@@ -185,22 +204,22 @@ export default function MoodChat({ onMusicRequest, isMinimized, onToggleMinimize
       </div>
 
       {/* Input area */}
-      <div className="border-t-4 border-black dark:border-white p-6 bg-zinc-50 dark:bg-zinc-950">
-        <div className="flex space-x-4">
+      <div className="border-t-4 border-black dark:border-white p-4 md:p-6 bg-zinc-50 dark:bg-zinc-950">
+        <div className="flex space-x-2 md:space-x-4">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Type anything... mood, genre, artist, trending..."
-            className="flex-1 bg-white dark:bg-black border-2 border-black dark:border-white rounded-xl px-4 py-3 text-black dark:text-white font-bold placeholder:text-zinc-500 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] focus:outline-none focus:translate-x-[2px] focus:translate-y-[2px] focus:shadow-none transition-all"
+            placeholder="Type mood, artist..."
+            className="flex-1 bg-white dark:bg-black border-2 border-black dark:border-white rounded-xl px-3 md:px-4 py-2 md:py-3 text-sm md:text-base font-bold placeholder:text-zinc-500 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] md:dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] focus:outline-none focus:translate-x-[2px] focus:translate-y-[2px] focus:shadow-none transition-all"
           />
           <button
             onClick={handleSend}
             disabled={!input.trim() || isTyping}
-            className="group relative px-6 py-3 bg-blue-700 text-white font-black uppercase tracking-wider border-2 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[64px]"
+            className="group relative px-4 md:px-6 py-2 md:py-3 bg-blue-700 text-white font-black uppercase tracking-wider border-2 border-black dark:border-white rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] md:dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:translate-x-[-2px] hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[5px_5px_0px_0px_rgba(255,255,255,1)] md:dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[50px] md:min-w-[64px]"
           >
-            <SentIcon size={24} className="text-white fill-current" />
+            <SentIcon size={20} className="text-white fill-current md:size-[24px]" />
           </button>
         </div>
       </div>
