@@ -65,11 +65,11 @@ export default function MusicTab() {
   }
 
   return (
-    <div className="flex h-full gap-8 max-w-6xl mx-auto py-8">
+    <div className="flex flex-col md:flex-row h-full gap-4 md:gap-8 max-w-6xl mx-auto py-4 md:py-8">
       {/* Left side: Mood Chat (Collapsible) */}
       <div 
         className={`flex transition-all duration-500 ease-in-out ${
-          isChatMinimized ? 'w-24' : 'flex-1 min-w-0'
+          isChatMinimized ? 'w-full md:w-24 h-16 md:h-auto' : 'w-full md:w-auto flex-1 min-w-0'
         }`}
       >
         <div className="flex-1 min-h-0">
@@ -84,7 +84,7 @@ export default function MusicTab() {
       {/* Right side: Music Player */}
       <div 
         className={`flex flex-col transition-all duration-500 ease-in-out ${
-          isChatMinimized ? 'flex-1 mx-auto max-w-5xl' : 'flex-1 min-w-0'
+          isChatMinimized ? 'flex-1 mx-auto max-w-5xl w-full' : 'flex-1 min-w-0 w-full'
         }`}
       >
         <div className="flex-1 min-h-0">
